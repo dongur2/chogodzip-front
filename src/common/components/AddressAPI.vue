@@ -3,7 +3,7 @@
       <input class="form-control" type="text" v-model="store.basicInfo.addr.postcode" placeholder="우편번호" readonly required />
       <input class="form-control" type="button" @click="execDaumPostcode" value="우편번호 찾기" /><br>
       <input class="form-control" type="text" v-model="store.basicInfo.addr.address" placeholder="주소" readonly required /><br>
-      <input class="form-control" type="text" v-model="store.basicInfo.addr.detailAddress" placeholder="상세주소" id="detailAddress" required />
+      <input class="form-control" type="text" v-model="store.basicInfo.addr.detailAddress" placeholder="상세주소(선택)" id="detailAddress" />
       <input class="form-control" type="text" v-model="extraAddress" readonly />
   </div>
 </template>

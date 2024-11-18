@@ -1,9 +1,51 @@
 import api from '@/api';
 
-const BASE_URL = '/api/member';
+const BASE_URL = '/api/user';
 const headers = { 'Content-Type': 'multipart/form-data' };
 
 export default {
+
+  //카카오 회원 정보 조회
+  async getKakaoInfo(code) {
+    const { data } = await api.get(`${BASE_URL}/kakaoInfo/${code}`);
+    return data;
+  },
+
+  //이미 가입된 이메일인지 확인
+  async checkKakaoDuplicated(username) {
+    const { data } = await api.get(`${BASE_URL}/checkkakaoid/${username}`);
+    return data;
+  },
+
+  //닉네임 중복 체크
+  async checkNicknameDuplicated(nickname) {
+    const { data } = await api.get(`${BASE_URL}/checknickname/${nickname}`);
+    return data;
+  },
+
+  //회원 가입
+  async create(user) {
+    const formData = new FormData();
+    formData.append('username', user.username);
+    formData.append('nickname', user.nickname);
+    formData.append('loginType', user.loginType);
+    formData.append('realRegion', user.realRegion);
+    formData.append('interestSi', user.interestSi);
+    formData.append('interestGu', user.interestGu);
+
+    if (user.pic) {
+      formData.append('pic', user.pic);
+    } else {
+      alert('프로필 사진을 선택해주세요.'); return;
+    }
+
+    //서버 요청
+    const { data } = await api.post(BASE_URL, formData, headers);
+
+    console.log('AUTH POST(백엔드 응답): ', data);
+    return data;
+  },
+
 
 //////////////  회원 정보（ａｕｔｈ） 조회   ///////////////////////
 
@@ -13,23 +55,6 @@ export default {
 //     return data;
 //   },
 
- ///////////////  회원 id중복 체크   ////////////////////////
-
-  async checkId(id) {
-    const { data } = await api.get(`${BASE_URL}/checkid/${id}`);
-    console.log('AUTH GET CHECK ID', data);
-    return data;
-  },
-
-  ///////////////  회원 kakao id중복 체크   ////////////////////////
-
-  async checkKakaoId(id) {
-    const { data } = await api.get(`${BASE_URL}/checkkakaoid/${id}`);
-    console.log('AUTH GET CHECK ID', data);
-    return data;
-  },
-
-
  ///////////////  회원 정보 조회（ｕｓｅｒｎａｍｅ ＝＝ ｉｄ） ////////////////////////
   async get(id) {
     const { data } = await api.get(`${BASE_URL}/${id}`);
@@ -37,37 +62,6 @@ export default {
     return data;
   },
 
-  async getKakaoInfo(code) {
-    const { data } = await api.get(`${BASE_URL}/kakaoInfo/${code}`);
-    console.log('AUTH GET', data);
-    return data;
-  },
-
- ///////////////// 회원 정보 가입 //////////////////////////
-  async create(member) {
-    const formData = new FormData();
-    formData.append('id', member.id);
-    formData.append('password', member.password);
-    formData.append('name', member.name);
-    formData.append('email', member.email);
-    if(member.kakaoId){
-      formData.append('kakaoId', member.kakaoId);
-    }
-    // 프로필 이미지 파일 추가
-    if (member.avatar) {
-      formData.append('avatar', member.avatar);
-    }
-    formData.append('address', member.address); // 주소 추가
-    formData.append('interestArea', member.interestArea); // 관심 지역 추가
-
-    
-
-     // --------> 회원 정보 post방식 전송  //////////////////////////
-    const { data } = await api.post(BASE_URL, formData, headers);
-
-    console.log('AUTH POST(백엔드 응답): ', data);
-    return data;
-  },
  /////////////// 회원 정보 수정 ///////////////////////////////
   
   async update(member) {
@@ -93,21 +87,5 @@ export default {
     console.log('AUTH DELETE: ', data);
     return data;
   },
-
- /////////////// 회원 암호 수정 ///////////////////////////////
-
-  async changePassword(formData) {
-    console.log('formData : ', formData);
-    const { data } = await api.put(`${BASE_URL}/${formData.id}/changepassword`, formData);
-    console.log('AUTH PUT: ', data);
-    return data;
-  },
-  async joinMember(userId){
-    const {data} = await api.get(`${BASE_URL}/join`,{
-      params : {userId}
-    });
-    console.log('MEMBER INFO : ',data);
-    return data;
-  }
 
 };
