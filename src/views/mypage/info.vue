@@ -8,50 +8,43 @@
 
     <div class="profile-section mt-5 mb-5">
       <div class="profile-image">
-        <img :src="profileImgUrl" alt="Profile Image" class="rounded-image" />
+        <img :src="userInfo.pic" alt="Profile Image" class="rounded-image" />
       </div>
     
-      <!-- 프로필 이미지 밑에 이미지 선택 -->
+      <!-- 프로필 이미지 밑 이미지 선택 -->
       <div class="container w-75 h-25 px-4 py-2 mt-3 rounded" style="background-color: var(--gray2);">
         <div class="image-grid mt-3">
           <div v-for="item in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10']" :key="item" class="form-check">
-            <input type="radio" :id="`image${item}`" :value="`https://chogodzip.s3.ap-northeast-2.amazonaws.com/DF${item}.png`" v-model="profileImgUrl" class="form-check-input" />
+            <input type="radio" :id="`image${item}`" :value="`https://chogodzip.s3.ap-northeast-2.amazonaws.com/DF${item}.png`" v-model="userInfo.pic" class="form-check-input" />
             <label :for="`image${item}`" class="form-check-label">
               <img :src="`https://chogodzip.s3.ap-northeast-2.amazonaws.com/DF${item}.png`" class="rounded-image" style="width:50%"/>
             </label>
           </div>
         </div>
       </div>
-
     </div>
 
     <div class="form-section">
-      <form>
+      <form @submit.prevent="updateProfile">
         <div class="mypage-form-group">
           <label for="nickname">닉네임</label>
-          <!-- 유저의 이름을 표시 -->
-          <input type="text" id="nickname" v-model="userName" />
+          <input type="text" id="nickname" v-model="userInfo.nickname" @input="checkNicknameDuplicated"/>
         </div>
+        <div class="mypage-form-group fs-sm" :class="isNicknameDuplicated.value ? 'text-danger' : 'text-primary'"><label for=""/>{{ nicknameNotice }}</div>
 
         <!-- 주소 입력 필드 -->
         <div class="mypage-form-group address-group">
-          <label for="address">실거주지</label>
-          <div class="input-group">
-            <!-- 유저의 주소를 표시 -->
-            <input type="text" id="address" v-model="userAddress" readonly />
-            <button class="btn btn-outline-secondary" type="button" @click="execDaumPostcode">검색</button>
-          </div>
+          <label for="address">거주지</label>
+          <input type="text" id="address" v-model="userInfo.realRegion" @click="execDaumPostcode" />
         </div>
 
         <!-- 관심 지역 -->
         <div class="mypage-form-group" style="margin-bottom:100px;">
           <label for="region">관심 지역</label>
-          <select id="region-si" v-model="selectedSi">
+          <select id="region-si" v-model="userInfo.interestSi" value="서울시">
             <option>서울시</option>
           </select>
-          <select id="region-gu" v-model="selectedGu">
-            <!-- 선택된 구 출력 -->
-            <option value="" disabled selected>{{ selectedGu }}</option>
+          <select id="region-gu" v-model="userInfo.interestGu">
             <option value="강남구">강남구</option>
             <option value="강동구">강동구</option>
             <option value="강북구">강북구</option>
@@ -81,7 +74,7 @@
         </div>
 
         <div class="d-flex flex-wrap justify-content-center">
-          <button type="submit" class="submit-button" @click="updateProfile">프로필 수정</button>
+          <button type="submit" class="submit-button">프로필 수정</button>
         </div>
       </form>
     </div>
@@ -93,38 +86,52 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import MyPageTab from '@/modules/components/mypage/MyPageTab.vue';
-import { useAuthStore } from '@/modules/stores/auth';
-import axios from 'axios';
-import api from '@/api/authApi'; 
+import auth from '@/api/authApi'; 
 
-// 컴포넌트 상태 및 데이터
-const auth = useAuthStore();
+const userInfo = reactive({
+    nickname: '',
+    pic: '',
+    realRegion: '',
+    interestSi: '',
+    interestGu: ''
+});
 
-const userId = ref(auth.id); // 유저 로그인 아이디 (중복불가) --고정
-
-//수정목록
-const userName = ref(auth.name); // 유저의 이름(닉네임)
-const profileImgUrl = ref(auth.profileImg);
-const userAddress = ref(auth.address); // 유저의 주소
-const selectedGu = ref(auth.interestArea); // 구 선택
-
-console.log('userName:',userName.value);
-console.log('profileImgUrl:',profileImgUrl.value);
-console.log('userAddress:',userAddress.value);
-console.log('selectedGu:',selectedGu.value);
-
-const extraAddress = ref(''); // 추가 주소
-const selectedSi = ref('서울시'); // 시 선택
 const isDaumScriptLoaded = ref(false); // Daum 스크립트 로드 여부
-const activeTab = ref('info'); // 현재 활성화된 탭
 
+//마이페이지 탭
+const activeTab = ref('info'); // 현재 활성화된 탭
 const tabs = [
   { name: 'info', label: '내 정보' },
   { name: 'favoriteRooms', label: '관심 매물 목록' },
   { name: 'postRooms', label: '등록한 매물 목록' }
 ];
+
+// 활성화된 탭 체크
+const isActiveTab = (name) => activeTab.value === name;
+
+// 활성 탭 설정
+const setActiveTab = (name) => {
+  activeTab.value = name;
+};
+
+//닉네임을 변경할 때마다 중복 체크 & 수정 요청 허가 확인
+const canSubmit = ref(true);
+const isNicknameDuplicated = ref(false);
+const nicknameNotice = ref('사용가능한 닉네임입니다.');
+const checkNicknameDuplicated = async () => {
+  isNicknameDuplicated.value = false;
+  canSubmit.value = false;
+
+  if(userInfo.nickname === '') {
+    nicknameNotice.value = '닉네임을 입력해주세요.'; return;
+  }
+
+  isNicknameDuplicated.value = await auth.checkNicknameDuplicated(userInfo.nickname);
+  canSubmit.value = isNicknameDuplicated.value ? false : true;
+  nicknameNotice.value = isNicknameDuplicated.value ? '이미 사용중인 닉네임입니다.' : '사용가능한 닉네임입니다.';
+}
 
 // Daum 우편번호 검색 API 실행
 const execDaumPostcode = () => {
@@ -138,9 +145,7 @@ const execDaumPostcode = () => {
         }
         if (extraAddr) extraAddr = ` (${extraAddr})`;
 
-        userAddress.value = addr; // 주소 설정
-        extraAddress.value = extraAddr; // 추가 주소 설정
-
+        userInfo.realRegion = addr;
       }
     }).open();
   } else {
@@ -148,81 +153,29 @@ const execDaumPostcode = () => {
   }
 };
 
-// Kakao 지도 API: 주소의 위도 & 경도 추출
-// const getCoordinates = (address) => {
-//   const geocoder = new window.daum.maps.services.Geocoder();
-//   geocoder.addressSearch(address, (result, status) => {
-//     if (status === window.daum.maps.services.Status.OK) {
-//       const { y: lat, x: lon } = result[0];
-//       console.log(`위도: ${lat}, 경도: ${lon}`);
-//     } else {
-//       console.error('Geocode was not successful: ' + status);
-//     }
-//   });
-// };
-console.log('ujpdate : ',userName.value);
+
 // 프로필 수정
 const updateProfile = async () => {
+  if(canSubmit.value == false || isNicknameDuplicated.value) {
+    alert('중복이 아닌 닉네임으로 변경해주세요.'); return;
+  }
 
   try {
-
-  auth.changeImage(profileImgUrl.value)
-    const updatedData = {
-      profileImg: profileImgUrl.value,
-      name: userName.value,
-      address: userAddress.value,
-      interestArea: selectedGu.value,
-    };
-
-    const response = await axios.put(`/api/member/change/${auth.state.id}`, updatedData);
+    const response = await auth.updateUserProfile(localStorage.getItem('accessToken'), userInfo);
 
     if (response.status === 200) {
       alert('프로필이 성공적으로 수정되었습니다.');
-      auth.state.value.profileImg = updatedData.profileImg;
-      auth.state.value.name = updatedData.name;
-      auth.state.value.address = updatedData.address;
-      auth.state.value.profileImg= updatedData.profileImg;
-      localStorage.setItem('auth', JSON.stringify(auth.state.value));
-      auth.load();
-      await fetchJoinMember(userId.value);
-    } else {
-      alert('프로필 수정에 실패했습니다.');
-    }
+      window.location.reload();
+
+    } else alert('프로필 수정에 실패했습니다.');
+
   } catch (error) {
-    console.error(error);
     console.error('프로필 수정 중 오류 발생:', error);
-    alert('프로필 수정 중 오류가 발생했습니다.');
   }
 };
-
-// 활성화된 탭 체크
-const isActiveTab = (name) => activeTab.value === name;
-
-// 활성 탭 설정
-const setActiveTab = (name) => {
-  activeTab.value = name;
-};
-
-// 회원 정보 가져오기 함수
-const fetchJoinMember = async(userId) => {
-  try {
-    const data = await api.joinMember(userId);
-    // 받아온 데이터를 userAddress와 selectedGu에 각각 설정
-    
-    userName.value = data.name;
-    userAddress.value = data.address;
-    selectedGu.value = data.interestArea;
-    profileImgUrl.value = data.profileImg;
-
-    console.log('FJM : ', data);
-  } catch (error) {
-    console.error('fct : ', error);
-  }
-}
 
 // Daum 우편번호 스크립트 로드 및 회원가입 정보 불러오기
 onMounted(async () => {
-  // Load the Daum Postcode script
   const script = document.createElement('script');
   script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
   script.onload = () => {
@@ -232,24 +185,23 @@ onMounted(async () => {
   document.head.appendChild(script);
 
   // 회원 정보를 불러와서 폼 필드에 설정
-  await fetchJoinMember(userId.value);
+  const info = await auth.getUserProfile(localStorage.getItem('accessToken'));
+  userInfo.nickname = info.nickname;
+  userInfo.pic = info.pic;
+  userInfo.realRegion = info.realRegion;
+  userInfo.interestSi = info.interestSi;
+  userInfo.interestGu = info.interestGu;
 });
 </script>
 
 
 <style scoped>
-* {
-  font-family: 'Spoqa Han Sans Neo';
-}
-
 .mypage-container {
   text-align: center;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
-
-
 
 h1 {
   font-size: 2.5rem;
@@ -350,7 +302,7 @@ h1 {
   margin-top: 20px;
 }
 
-.mypage-form-group.address-group {
+.mypage-form-group .address-group {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
@@ -369,15 +321,6 @@ input[type="text"] {
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-}
-
-button.btn {
-  padding: 10px 20px;
-  border: 1px solid #ccc;
-  background-color: #7747B5;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 .detailed-address,
@@ -405,15 +348,6 @@ button.btn {
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-}
-
-.input-container button.btn {
-  padding: 10px 20px;
-  border: 1px solid #ccc;
-  background-color: #7747B5;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 .image-grid {

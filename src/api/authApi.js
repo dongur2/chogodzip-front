@@ -46,6 +46,26 @@ export default {
     return data;
   },
 
+  //[마이페이지 - 프로필] 회원 정보 조회
+  async getUserProfile(token) {
+    const { data } = await api.get(`${BASE_URL}/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return data;
+  },
+
+  //[마이페이지 - 프로필] 회원 정보 수정
+  async updateUserProfile(token, userInfo) {
+    const response = await api.post(`${BASE_URL}/profile`, userInfo, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    return response;
+  },
+
 
 //////////////  회원 정보（ａｕｔｈ） 조회   ///////////////////////
 
@@ -62,26 +82,7 @@ export default {
     return data;
   },
 
- /////////////// 회원 정보 수정 ///////////////////////////////
-  
-  async update(member) {
-    const formData = new FormData();
-    formData.append('id', member.id);
-    formData.append('name', member.name);
-    formData.append('password', member.password);
-    formData.append('email', member.email);
-
-    if (member.avatar) {
-      formData.append('avatar', member.avatar);
-    }
-
-    const { data } = await api.put(`${BASE_URL}/${member.id}`, formData, headers);
-    console.log('AUTH PUT: ', data);
-    return data;
-  },
-
  /////////////// 회원 탈퇴 ///////////////////////////////
-  
   async delete(id) {
     const { data } = await api.delete(`${BASE_URL}/${id}`);
     console.log('AUTH DELETE: ', data);
