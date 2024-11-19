@@ -59,7 +59,7 @@
 
 <script setup>
 import { ref, onMounted, computed, reactive, nextTick } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import api from '@/api/chatApi';

@@ -84,7 +84,7 @@ import { onMounted, ref } from 'vue'; // ref를 vue에서 임포트합니다.
 import { formatDate } from '@/utils/timestamp.js';
 import { getTagName, matchTagStyle } from '@/modules/components/community/tags.js';
 
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 const { isLogin, id } = useAuthStore(); //현재 로그인한 아이디
 
 //상세글 데이터 조회

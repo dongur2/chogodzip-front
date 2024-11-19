@@ -1,29 +1,26 @@
 <script setup>
-import { computed, reactive, onMounted, } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { useRoute, useRouter } from 'vue-router';
+import { reactive, onMounted, } from 'vue';
+import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/modules/stores/auth';
 
 const route = useRoute();
-const router = useRouter();
 const auth = useAuthStore();
 
-//////////////////////////////////////////////////////////
-const member = reactive({
+const user = reactive({
   code: '',
 });
 
 onMounted(async () => {
   try {
-    member.code = route.query.code;
-    console.log(member);
+    user.code = route.query.code;
 
-    await auth.login(member);
-    // alert('로그인이 완료 되었습니다.');
-    router.push('/');
+    const token = await auth.login(user);
+    localStorage.setItem('accessToken', token);
+
+    window.location.href = "/";
     
   } catch (e) {
-    // 로그인 에러
-    console.log('에러=======', e);
+    console.log('로그인 실패:', e);
     e.value = e.response.data;
   }
 });
@@ -32,7 +29,7 @@ onMounted(async () => {
 <template>
   <div class="mt-5 mx-auto" style="width: 100px">
     <div class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
+      <span class="visually-hidden">로그인합니다</span>
     </div>
   </div>
 </template>

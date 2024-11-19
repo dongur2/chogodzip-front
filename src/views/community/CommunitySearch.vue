@@ -116,7 +116,7 @@ import axios from 'axios';
 import { ref, onMounted, getTransitionRawChildren } from 'vue';
 import ArticleEach from './ArticleEach.vue';
 import Pagination from '@/common/components/Pagination.vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 import { getTagName, tagMapping } from '@/modules/components/community/tags.js';
 
 const authStore = useAuthStore();

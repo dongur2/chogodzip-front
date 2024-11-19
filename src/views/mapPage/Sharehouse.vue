@@ -213,7 +213,7 @@ import api from '@/api/mapApi'; // 고시원 데이터를 가져올 api 파일
 import markerImageSrc from '@/assets/img/room/house1.png'; // 마커 이미지
 import searchApi from '@/api/searchApi';
 import interestApi from '@/api/interestApi';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 import { useRoute } from 'vue-router';
 
 

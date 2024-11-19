@@ -48,7 +48,7 @@
   import { ref, onMounted } from 'vue';
   import { useRoute } from 'vue-router';
   import { formatDate } from '@/utils/timestamp.js';
-  import { useAuthStore } from '@/stores/auth';
+  import { useAuthStore } from '@/modules/stores/auth';
   import axios from 'axios';
 
   const route = useRoute();

@@ -1,7 +1,7 @@
 import router from '@/router';
 import axios from 'axios';
 import { defineStore } from 'pinia'
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 
 export const usePostRoomStore = defineStore('postRoom', {
     state: () => ({

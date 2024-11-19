@@ -26,9 +26,4 @@ export default [
     name: 'profile',
     component: () => import('../views/auth/ProfilePage.vue'),
   },
-  {
-    path: '/auth/changepassword',
-    name: 'changepassword',
-    component: () => import('../views/auth/ChangePasswordPage.vue'),
-  },
 ];

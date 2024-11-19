@@ -4,11 +4,11 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css"
     />
     <div id="app">
-      <Header></Header>
+      <Header />
       <div style="padding-top:6rem">
-        <router-view></router-view>
+        <router-view />
       </div>
-      <Footer></Footer>
+      <Footer />
     </div>
 </template>
 

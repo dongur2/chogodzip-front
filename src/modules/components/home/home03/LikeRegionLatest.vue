@@ -15,7 +15,7 @@
 <script setup>
 import RoomCard from '@/common/components/RoomCard.vue';
 import axios from 'axios';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 import { ref, onMounted } from 'vue';
 
 const { id, interestArea } = useAuthStore();

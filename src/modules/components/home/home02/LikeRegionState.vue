@@ -56,7 +56,7 @@
 import RouterButton from './RouterButton.vue';
 import StatsForLikeRegion from './StatsForLikeRegion.vue';
 import LikedMap from './LikedMap.vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 const { name, interestArea } = useAuthStore();
 
 

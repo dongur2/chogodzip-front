@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 
   //////////////////////////////////////////////////////////
 export const isAuthenticated = (to, from) => {

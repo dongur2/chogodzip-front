@@ -40,7 +40,7 @@ import { ref, computed, onMounted } from 'vue';
 import MyPageTab from '@/modules/components/mypage/MyPageTab.vue';
 import api from '@/api/detailRoom';
 import interApi from '@/api/interestApi';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 
 const auth = useAuthStore();
 

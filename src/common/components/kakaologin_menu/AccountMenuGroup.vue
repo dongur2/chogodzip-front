@@ -2,7 +2,7 @@
 import MenuItem from './MenuItem.vue';
 import AccountMenuItem from './AccountMenuItem.vue';
 import config from '@/config';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 import LogoutMenuItem from './LogoutMenuItem.vue';
 import { computed } from 'vue';
 

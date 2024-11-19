@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 import router from '@/router';
 import qs from "qs";
 

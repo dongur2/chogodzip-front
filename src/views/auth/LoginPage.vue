@@ -23,41 +23,5 @@
       </div>
     </div>
   </div>
-
-
-
-
-  <!-- <div class="mt-5 mx-auto" style="width: 500px">
-    <a class="order-lg-3" href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=07df78249e73e0bcac8ddfe9af045b0a&redirect_uri=http://localhost:5173/auth/kakaojoin">
-        <img src="@/assets/img/kakaologin/kakao_login_medium_narrow.png">
-    </a>
-    <a class="order-lg-3" href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=07df78249e73e0bcac8ddfe9af045b0a&redirect_uri=http://localhost:5173/auth/kakaologin">
-        <img src="@/assets/img/kakaologin/kakao_login_medium_narrow_login.png" >
-    </a>
-
-    <form @submit.prevent="login">
-      <div class="mb-3 mt-3">
-        <label for="id" class="form-label">
-          <i class="fa-solid fa-user"></i>
-          사용자 ID:
-        </label>
-        <input type="text" class="form-control" placeholder="사용자 ID" v-model="member.id" required />
-      </div>
-
-      <div class="mb-3">
-        <label for="password" class="form-label">
-          <i class="fa-solid fa-lock"></i>
-          비밀번호:
-        </label>
-        <input type="password" class="form-control" placeholder="비밀번호" v-model="member.password" required />
-      </div>
-
-      <div v-if="error" class="text-danger">{{ error }}</div>
-
-      <button type="submit" class="btn btn-primary mt-4" :disabled="disableSubmit">
-        <i class="fa-solid fa-right-to-bracket"></i>
-        로그인
-      </button>
-    </form>
-  </div> -->
+  
 </template>

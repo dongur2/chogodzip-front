@@ -55,7 +55,7 @@
   // import fetchReviews from '@/utils/review'; // fetchReviews 함수를 가져옵니다.
   import fetchSummaryReviews from '@/utils/review'; // review.js에서 요약 리뷰 함수 가져오기
   import { useRoute } from 'vue-router';
-  import { useAuthStore } from '@/stores/auth';
+  import { useAuthStore } from '@/modules/stores/auth';
   import DetailCard from '@/modules/components/detail/DetailCard.vue';
   import DetailInfo from '@/modules/components/detail/DetailInfo.vue';
   import DetailMap from '@/modules/components/detail/DetailMap.vue';

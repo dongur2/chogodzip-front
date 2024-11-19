@@ -7,12 +7,11 @@
             </a>
 
             <!-- 로그인했을 경우 마이페이지 라우터 모달: 닉네임, 프로필 사진 표시 -->
-            <div v-if="islogin == true" class="dropdown d-none d-lg-block order-lg-3 my-n2 me-3">
+            <div v-if="isLogin" class="dropdown d-none d-lg-block order-lg-3 my-n2 me-3">
                 <a class="d-block py-2" href="#">
-                    <!-- 프로필 이미지가 있으면 사용하고, 없으면 기본 이미지 사용 -->
                     <img 
                         class="rounded-circle" 
-                        :src="profileImg" 
+                        :src="userInfo.pic" 
                         width="40" 
                         alt="User"
                     >
@@ -21,13 +20,13 @@
                     <div class="d-flex align-items-start border-bottom px-3 py-1 mb-2" style="width: 16rem;">
                         <img 
                         class="rounded-circle" 
-                        :src="profileImg" 
+                        :src="userInfo.pic" 
                         width="48" 
                         alt="User"
                         >
                         <div class="ps-2">
-                            <h6 class="fs-base mb-0">{{name}}</h6>
-                            <div class="fs-xs py-0">관심지역: 서울시 {{interstLocation}}</div>
+                            <h6 class="fs-base mb-0">{{ userInfo.nickname }}</h6>
+                            <div class="fs-xs py-0">관심지역: 서울시 {{ userInfo.interestGu }}</div>
                         </div>
                     </div>
                     <a class="dropdown-item" href="/mypage/info"><i class="far fa-user-circle opacity-60 me-2"/>내 프로필</a>
@@ -46,7 +45,7 @@
             </div>
 
             <!-- 로그인 / 회원가입 버튼 -->
-            <a v-if="islogin == false" class="btn btn btn-outline-accent btn-sm rounded-pill ms-2 order-lg-3" href="/auth/login">
+            <a v-else class="btn btn btn-outline-accent btn-sm rounded-pill ms-2 order-lg-3" href="/auth/login">
                 로그인 | <span class='d-none d-sm-inline'>회원 가입</span>
             </a>
 
@@ -74,10 +73,6 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="/help/easyDictionary" role="button" aria-expanded="false">도움말</a>
-                        <!-- <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/help/easyDictionary">쉬운 말 사전</a></li>
-                            <li><a class="dropdown-item" href="#">별별 통계</a></li>
-                        </ul> -->
                     </li>
                 </ul>
             </div>
@@ -86,40 +81,34 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '@/stores/auth';
-import { watch,computed } from 'vue';
-import defaultProfileImage from "@/assets/images/pfp/pfp01.png"; 
-
-// kakao login - 로그인 감지
-// const { login, join } = config.accoutMenus;
+import { ref, onMounted, reactive } from 'vue';
+import { useAuthStore } from '@/modules/stores/auth';
 const auth = useAuthStore();
 
-let islogin = computed(() => auth.isLogin); // islogin 을 직접 바꿀 수는 없음. (computed 속성) - 값을 바꾸려면 auth.isLogin 값을 바꿔야 함.
-const id = computed(() => auth.id); // id 을 직접 바꿀 수는 없음. (computed 속성)  - 값을 바꾸려면 auth.id 값을 바꿔야 함.
-const name = computed(() => auth.name); // id 을 직접 바꿀 수는 없음. (computed 속성)  - 값을 바꾸려면 auth.id 값을 바꿔야 함.
-const profileImg = computed(() => auth.profileImg);  // 프로필 이미지 가져오기
-const interstLocation = computed(() => auth.interestArea); // 프로필 이미지 가져오기
+const accessToken = ref(localStorage.getItem('accessToken'));
+const isLogin = ref(false);
 
-// alert(profileImg)
-// // 프로필 이미지 URL 계산 (없으면 기본 이미지 사용, 공백, null, undefined 모두 기본 이미지 처리)
-// const profileImgUrl = computed(() => {
-//   // profileImg.value 가 null, undefined 또는 빈 문자열인 경우 기본 이미지 사용
-//   if (profileImg.value == null) return defaultProfileImage; // 기본 프로필 이미지 경로
-//   else return profileImg.value;
-// });
+const userInfo = reactive({
+    nickname: '',
+    pic: '',
+    interestSi: '',
+    interestGu: ''
+});
 
+onMounted(async () => {
+    isLogin.value = accessToken.value ? true : false;
+    if(isLogin.value) {
+        const info = await auth.getLoginUserInfo(accessToken.value);
 
-// (임시) 로그아웃
-// const signOut = () => {
-//     auth.isLogin = false; 
-//     console.log("로그아웃했음" + islogin);
-// };
+        userInfo.nickname = info.nickname;
+        userInfo.pic = info.pic;
+        userInfo.interestSi = info.interestSi;
+        userInfo.interestGu = info.interestGu;
+    }
+});
 
 const signOut = () => {
-    auth.logout(); // Pinia의 logout action 호출 (stores/auth.js)
+    auth.logout();
     window.location.href = '/'; 
 };
-
-
-
 </script>

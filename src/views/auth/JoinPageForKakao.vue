@@ -6,7 +6,7 @@ import { useRouter, useRoute } from 'vue-router';
 import authApi from '@/api/authApi';
 import AddressAPI from '@/common/components/AddressAPI.vue';
 
-import { useAuthStore } from '@/stores/auth'; // auth 스토어 가져오기
+import { useAuthStore } from '@/modules/stores/auth'; // auth 스토어 가져오기
 const auth = useAuthStore(); // auth 스토어 사용
 
 const router = useRouter();
@@ -53,26 +53,27 @@ const updateAddress = (address) => {
 
 //회원가입 요청
 const join = async () => {
-  // try {
-    await authApi.create(user); // 회원가입 요청
+  try {
+    const joinedUser = await authApi.create(user); // 회원가입 요청
 
     // 회원가입 성공 후, 로그인 요청
-  //   await auth.login({ id: user.username });
-  //   router.push({ name: 'home' });
+    await auth.login({ userId: joinedUser.userId, username: joinedUser.username });
 
-  // } catch (e) {
-  //    // 응답 데이터 확인
-  //    if (e.response) {
-  //     // console.error('응답 데이터:', e.response.data); // 서버에서 반환한 데이터
-  //     console.error('응답 상태 코드:', e.response.status); // 상태 코드
-  //     console.error('응답 헤더:', e.response.headers); // 응답 헤더
-  //   } else if (e.request) {
-  //     console.error('요청은 전송되었으나 응답이 없습니다:', e.request);
-  //   } else {
-  //     console.error('요청 설정 중 에러 발생:', e.message);
-  //   }
-  //   router.push({ path: '/error' });
-  // }
+    router.push({ name: 'home' });
+
+  } catch (e) {
+     // 응답 데이터 확인
+     if (e.response) {
+      // console.error('응답 데이터:', e.response.data); // 서버에서 반환한 데이터
+      console.error('응답 상태 코드:', e.response.status); // 상태 코드
+      console.error('응답 헤더:', e.response.headers); // 응답 헤더
+    } else if (e.request) {
+      console.error('요청은 전송되었으나 응답이 없습니다:', e.request);
+    } else {
+      console.error('요청 설정 중 에러 발생:', e.message);
+    }
+    router.push({ path: '/error' });
+  }
 };
 
 //페이지 이동 직후 이미 가입된 이메일인지 확인

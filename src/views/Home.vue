@@ -1,14 +1,14 @@
 <template>
     <div>
         <SearchHouse />
-        <div class="container">
+        <!-- <div class="container">
             <LikeRegionState :lat="lat" :long="long" :si="si" :gu="gu" :isPositionReady2="isPositionReady2"  />
         </div>
         <LikeRegionLatest :si="si" :gu="gu" />
         <div class="container">
             <LottosInfo />
         </div>
-        <TodayLecture />
+        <TodayLecture /> -->
     </div>
 </template>
 
@@ -20,7 +20,7 @@ import SearchHouse from '@/modules/components/home/home01/SearchHouse.vue';
 import TodayLecture from '@/modules/components/home/home05/TodayLecture.vue';
 import { useGeolocation } from '@/api/useLocation';
 import { onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 
 
 //현재 위치, 관심 지역 관련 

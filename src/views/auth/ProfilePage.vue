@@ -1,6 +1,6 @@
 <script setup>
 import authApi from '@/api/authApi';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/modules/stores/auth';
 import { useRouter } from 'vue-router';
 import { computed, reactive, ref } from 'vue';
 
