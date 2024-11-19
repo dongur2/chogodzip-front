@@ -1,9 +1,32 @@
-import api from '@/api';
+import api from '@/api/tokenApi';
+import axios from 'axios';
 
 const BASE_URL = '/api/user';
 const headers = { 'Content-Type': 'multipart/form-data' };
 
 export default {
+
+  //로그인
+  async login(user) {
+    const { data } = await axios.post('/api/auth/login', user);
+    return data;
+  },
+
+  //로그아웃
+  async logout() {
+    localStorage.clear();
+  },
+
+  //헤더 회원정보 조회
+  async getLoginUserInfo() {
+    const { data } = await api.get('/api/user');
+    return data;
+  },
+
+  //JWT Access Token 추출
+  async getToken() {
+    return localStorage.getItem('accessToken')
+  },
 
   //카카오 회원 정보 조회
   async getKakaoInfo(code) {
@@ -41,28 +64,18 @@ export default {
 
     //서버 요청
     const { data } = await api.post(BASE_URL, formData, headers);
-
-    console.log('AUTH POST(백엔드 응답): ', data);
     return data;
   },
 
   //[마이페이지 - 프로필] 회원 정보 조회
   async getUserProfile(token) {
-    const { data } = await api.get(`${BASE_URL}/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const { data } = await api.get(`${BASE_URL}/profile`);
     return data;
   },
 
   //[마이페이지 - 프로필] 회원 정보 수정
-  async updateUserProfile(token, userInfo) {
-    const response = await api.post(`${BASE_URL}/profile`, userInfo, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    });
+  async updateUserProfile(userInfo) {
+    const response = await api.post(`${BASE_URL}/profile`, userInfo);
     return response;
   },
 

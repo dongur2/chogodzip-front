@@ -1,10 +1,9 @@
 <script setup>
 import { reactive, onMounted, } from 'vue';
 import { useRoute } from 'vue-router';
-import { useAuthStore } from '@/modules/stores/auth';
+import authApi from '@/api/authApi';
 
 const route = useRoute();
-const auth = useAuthStore();
 
 const user = reactive({
   code: '',
@@ -14,7 +13,7 @@ onMounted(async () => {
   try {
     user.code = route.query.code;
 
-    const token = await auth.login(user);
+    const token = await authApi.login(user);
     localStorage.setItem('accessToken', token);
 
     window.location.href = "/";

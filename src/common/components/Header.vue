@@ -82,8 +82,7 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
-import { useAuthStore } from '@/modules/stores/auth';
-const auth = useAuthStore();
+import authApi from '@/api/authApi';
 
 const accessToken = ref(localStorage.getItem('accessToken'));
 const isLogin = ref(false);
@@ -98,7 +97,7 @@ const userInfo = reactive({
 onMounted(async () => {
     isLogin.value = accessToken.value ? true : false;
     if(isLogin.value) {
-        const info = await auth.getLoginUserInfo(accessToken.value);
+        const info = await authApi.getLoginUserInfo(accessToken.value);
 
         userInfo.nickname = info.nickname;
         userInfo.pic = info.pic;
@@ -108,7 +107,7 @@ onMounted(async () => {
 });
 
 const signOut = () => {
-    auth.logout();
+    authApi.logout();
     window.location.href = '/'; 
 };
 </script>

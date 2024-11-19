@@ -161,7 +161,7 @@ const updateProfile = async () => {
   }
 
   try {
-    const response = await auth.updateUserProfile(localStorage.getItem('accessToken'), userInfo);
+    const response = await auth.updateUserProfile(userInfo);
 
     if (response.status === 200) {
       alert('프로필이 성공적으로 수정되었습니다.');

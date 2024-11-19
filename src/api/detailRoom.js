@@ -1,4 +1,4 @@
-import api from '@/api';
+import api from '@/api/tokenApi';
 
 const BASE_URL = '/api/detail';
 

@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { useAuthStore } from '@/modules/stores/auth';
+import authApi from './authApi';
 import router from '@/router';
 import qs from "qs";
 
-//
+//객체를 key=value 형태의 문자열로 변환하여 API 요청 URL을 구성하도록 설정
 axios.defaults.paramsSerializer = params => {
   return qs.stringify(params);
 }
@@ -13,17 +13,13 @@ const instance = axios.create({
   timeout: 1000,
 });
 
-
 // 요청 인터셉터
 instance.interceptors.request.use(
-  (config) => {
-    // JWT 추출
-    const { getToken } = useAuthStore();
-    const token = getToken();
+  async (config) => {
+    const token = await authApi.getToken();
     if (token) {
       // 토큰이 있는 경우
       config.headers['Authorization'] = `Bearer ${token}`;
-      console.log(config.headers.Authorization);
     }
     return config;
   },
@@ -44,13 +40,16 @@ instance.interceptors.response.use(
     }
     return response;
   },
+  
   async (error) => {
+    //로그인 필요
     if (error.response?.status === 401) {
       const { logout } = useAuthStore();
       logout();
       router.push('/auth/login?error=loing_required');
       return Promise.reject({ error: '로그인이 필요한 서비스입니다.' });
-      // 로그인 필요
+
+    //권한 부족
     } else if (error.response?.status === 403) {
       return Promise.reject({ error: '권한이 부족합니다.' });
     }
