@@ -11,19 +11,8 @@ export default [
     component: () => import('../views/auth/LoginPageForKakao.vue'),
   },
   {
-    path: '/auth/join',
-    name: 'join',
-    component: () => import('../views/auth/JoinPage.vue'),
-  },
-  {
     path: '/auth/kakaojoin',
     name: 'kakaojoin',
     component: () => import('../views/auth/JoinPageForKakao.vue'),
-  },
-    
-  {
-    path: '/auth/profile',
-    name: 'profile',
-    component: () => import('../views/auth/ProfilePage.vue'),
   },
 ];
