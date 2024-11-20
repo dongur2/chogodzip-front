@@ -1,21 +1,35 @@
 import api from '@/api/tokenApi';
 
-const BASE_URL = '/api/map';
+const BASE_URL = '/api/rooms/map';
 
 const headers = { 'Content-Type': 'multipart/form-data' };
 
 export default {
 
-    async getGosiwonList(params) {
-        const { data } = await api.get(`${BASE_URL}/gosiwon`, params);
-        console.log('GOSIWON GET LIST: ', data);
+    //지도 기반 주변 고시원 조회
+    async getNearByGosiwonsInMap(params) {
+        const { data } = await api.get(`${BASE_URL}/gosiwons`, params);
         return data;
     },
+
+    //지도 기반 주변 원/투룸 조회
+    async getNearByOnetwoRoomsInMap(params){
+        const {data} = await api.get(`${BASE_URL}/onetwos`, params);
+        return data;
+    },
+
+    //지도 기반 주변 공유주거 조회
+    async getNearByShareHousesInMap(params){
+        const {data} = await api.get(`${BASE_URL}/shares`, params);
+        return data;
+    },
+
     async getList(params){
         const { data } = await api.get(`${BASE_URL}/filter`,params);
         console.log('filter Gosiwon : ', data);
         return data;
     },
+
     async getFavoriteCnt(params) {
         try {
             // params를 객체로 전달
@@ -27,17 +41,5 @@ export default {
             throw error;  // 오류를 다시 던져서 상위 로직에서 처리할 수 있도록 함
         }
     },
-    async getJachiList(params){
-        const {data} = await api.get(`${BASE_URL}/jachi`, params);
-        console.log('JACHI GET LIST: ',data);
-        return data;
-    },
-    async getShareHouseList(params){
-        const {data} = await api.get(`${BASE_URL}/sharehouse`, params);
-        console.log(`SHAREHOUSE GET LIST : `,data);
-        return data;
-    }
-    
-
 }
 

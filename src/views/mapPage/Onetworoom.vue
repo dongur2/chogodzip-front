@@ -511,13 +511,13 @@ const markers = ref([]);
 const fetchJachiData = async (lat, lng) => {
   try {
     const params = { lat, lng };
-    const data = await api.getJachiList({ params });
+    const data = await api.getNearByOnetwoRoomsInMap({ params });
 
     propertiesData.value = data; // 받아온 데이터를 상태에 저장
     heartIcons.value = Array(data.length).fill('far fa-heart'); // 하트 아이콘 초기화
 
     // 필터 적용
-    applyFilters();
+    // applyFilters();
 
     // 기존 마커 초기화
     markers.value.forEach((marker) => marker.setMap(null));
@@ -525,7 +525,8 @@ const fetchJachiData = async (lat, lng) => {
 
     // 새 마커 생성
     markers.value = data.map((property) => {
-      const markerPosition = new kakao.maps.LatLng(property.room.roomLat, property.room.roomLong);
+      const markerPosition = new kakao.maps.LatLng(property.roomLat, property.roomLong);
+
       const marker = new kakao.maps.Marker({
         position: markerPosition,
         title: property.roomName,
@@ -534,7 +535,7 @@ const fetchJachiData = async (lat, lng) => {
       marker.setMap(map.value);
 
       const infoWindow = new kakao.maps.InfoWindow({
-        content: `<div style="padding:5px;font-size:12px;">${property.room.address}<br/>월세: ${property.priceMax} 만원</div>`,
+        content: `<div style="padding:5px;font-size:12px;">${property.address}<br/>월세: ${property.priceMax} 만원</div>`,
       });
 
       // 마커 클릭 이벤트 - 상태를 내부에서 관리

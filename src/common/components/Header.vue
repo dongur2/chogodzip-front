@@ -55,9 +55,9 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">방 찾기</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/houses/maps/gosiwons">고시원</a></li>
-                            <li><a class="dropdown-item" href="/houses/maps/room">자취방</a></li>
-                            <li><a class="dropdown-item" href="/houses/maps/sharehouses">공유주거공간</a></li>
+                            <li><router-link class="dropdown-item" :to="{ name: 'gosiwon' }">고시원</router-link></li>
+                            <li><router-link class="dropdown-item" :to="{ name: 'onetworoom' }">원·투룸</router-link></li>
+                            <li><router-link class="dropdown-item" :to="{ name: 'sharehouse' }">공유주거공간</router-link></li>
                         </ul>
                     </li>
                     <!-- <li class="nav-item dropdown">
