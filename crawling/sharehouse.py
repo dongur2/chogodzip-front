@@ -149,14 +149,15 @@ while(1):
         if result[0] == 0:  # 데이터가 중복되지 않는 경우에만 삽입
             cursor.execute("""
             INSERT INTO ROOM
-                ( ROOM_ID, ROOM_LAT, ROOM_LONG, THUMBNAIL, ADDRESS,
+                ( ROOM_ID, ROOM_LAT, ROOM_LONG, THUMBNAIL, PICS, ADDRESS,
                 HOUSE_TYPE_CD, HOUSE_TYPE_NM, DONGLI_NM, CONTRACT_MIN, ROOM_CNT)
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,(
                 room_id,
                 room_lat,
                 room_long,
-                thumbnail,
+                f'https://api.gobang.kr/v1/image?path=/house/{room_id}/{thumbnail}&width=1440&height=-1',
+                f'https://api.gobang.kr/v1/image?path=/house/{room_id}/{thumbnail}&width=1440&height=-1|',
                 room_addr,
                 house_type_cd,
                 house_type_nm,
