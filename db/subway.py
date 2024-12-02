@@ -16,23 +16,35 @@ def insertsql_from_json():
     cursor = conn.cursor() # Cursor Object 
 
     #geoJson 가져오기
-    with open('seoul_subway.json', encoding='utf-8') as json_file:
+    with open('/Users/dongyi/coding/projects/chogodzip/front/db/subway.json', encoding='utf-8') as json_file:
         json_data = json.load(json_file)
-        #json의 key로 접근
-        #json_line : json 객체를 가지는 Array
         json_line = json_data['DATA']
 
         for subway in json_line:
-            line_num = subway['line_num']
-            station_code = subway['station_cd']
-            station_name = subway['station_nm']
-            station_fcode = subway['fr_code']
+            for swy in subway['node']:
+                stations = swy['station']  # 각 역 정보
 
-            sql = "INSERT INTO SUBWAY VALUES (%s, %s, %s, %s)"
-            val = (station_code, station_name, line_num, station_fcode)
+                for station in stations:
+                    code = station['station_cd']  # 코드
+                    name = station['name']  # 이름
+                    lat = station['lat']  # 위도
+                    lng = station['lng']  # 경도
+                    line = station['line'] # 라인
+                    exCode = station['fr_code']  # 외부 코드
 
-            cursor.execute(sql, val)
-            conn.commit()
+                    # 중복된 코드가 있는지 확인
+                    check_sql = "SELECT COUNT(*) FROM SUBWAY WHERE CODE = %s"
+                    cursor.execute(check_sql, (code,))
+                    result = cursor.fetchone()
+
+                    # 이미 존재하는 경우 무시
+                    if result[0] > 0:
+                        continue
+
+                    sql = "INSERT INTO SUBWAY VALUES (%s, %s, %s, %s, %s, %s)"
+                    val = (code, name, lat, lng, line, exCode)
+                    cursor.execute(sql, val)
+                    conn.commit()
 
     print(cursor.rowcount, "데이터 저장 완료")
 
