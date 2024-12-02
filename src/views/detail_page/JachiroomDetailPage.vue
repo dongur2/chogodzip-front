@@ -62,7 +62,7 @@ import DetailMap from '@/modules/components/detail/DetailMap.vue';
 import ReviewTab from '@/modules/components/detail/ReviewTab.vue';
 import RoomTable from '@/modules/components/detail/table/RoomTable.vue';
 import api from '@/api/detailRoom';
-import mpApi from '@/api/mapApi';
+import mpApi from '@/api/room/mapApi';
 import interApi from '@/api/interestApi';
 
 // 좋아요 토글 핸들러

@@ -62,7 +62,7 @@
   import ReviewTab from '@/modules/components/detail/ReviewTab.vue';
   import GosiwonTable from '@/modules/components/detail/table/GosiwonTable.vue';
   import api from '@/api/detailRoom';
-  import mpApi from '@/api/mapApi';
+  import mpApi from '@/api/room/mapApi';
   import interApi from '@/api/interestApi';
   
   // 좋아요 토글 핸들러

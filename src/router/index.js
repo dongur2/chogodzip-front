@@ -3,12 +3,11 @@ import { createRouter, createWebHistory } from 'vue-router';
 // 1) vue 파일 가져오는 import 문 작성
 import Home from '@/views/Home.vue';
 
-import houseRoutes from './house';
+import roomRoutes from './room';
 import lottoRoutes from './lotto';
 import mypageRoutes from './mypage';
 import communityRoutes from './community';
 import helpRoutes from './help';
-import roomRoutes from './registRoom';
 import userRoutes from './user';
 import authRoutes from './auth';
 import Chat from '@/views/Chat.vue';
@@ -29,12 +28,11 @@ const router = createRouter({
     { path: '/payment', name: 'payment', component: Payment},
     { path: '/kakaopay/kakaoPaySuccess',name : 'kakaoSuccess', component: kakaoPaySuccess},
     // 2안 ) 여러개의 경로를 묶을 수도 있다.
-    ...houseRoutes,
+    ...roomRoutes,
     ...lottoRoutes,
     ...mypageRoutes,
     ...communityRoutes,
     ...helpRoutes,
-    ...roomRoutes,
     ...userRoutes,
     ...authRoutes,
     ...errorRoutes,
