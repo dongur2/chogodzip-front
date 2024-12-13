@@ -21,7 +21,7 @@ export default {
             const infoWindow = new kakao.maps.InfoWindow({
                 content: `
                     <div style="padding:5px;font-size:12px;">
-                        <a href="/rooms/gosiwons/${property.roomId}" style="text-decoration:none; color:blue;">
+                        <a href="/rooms/${property.roomId}" style="text-decoration:none; color:blue;">
                             ${property.title}<br/>월세: ${property.priceMax} 만원
                         </a>
                     </div>
@@ -40,7 +40,7 @@ export default {
 
             // 마커 더블클릭 이벤트 - 매물 상세 페이지로 이동
             kakao.maps.event.addListener(marker, 'dblclick', () => {
-                router.push(`/rooms/gosiwons/${property.roomId}`);
+                router.push(`/rooms/${property.roomId}`);
             });
             
             return marker;
@@ -51,30 +51,32 @@ export default {
     // 매물 필터링
     async applyFilters (map, filters, markers, propertiesData, filteredProperties) {
         filteredProperties.value = propertiesData.value.filter((property) => {
-            // 대출 필터 적용
-            const matchesLoan = filters.loan.length === 0 || property.canLoan;
+            //타입
+            const isMatchWithType = filters.type.length === 0 || (
+                (filters.type.includes('HOUTP00001') && property.houseTypeCd === "HOUTP00001") ||
+                (filters.type.includes('HOUTP00003') && property.houseTypeCd === "HOUTP00003") ||
+                (filters.type.includes('HOUTP00003') && property.houseTypeCd === "HOUTP00006") //06:모텔은 원룸텔로 분류됨
+            );
+
+            // 대출 
+            const isMatchWithLoan = filters.loan.length === 0 || property.canLoan;
         
-            const matchesFloor = filters.floor.length === 0 || (
-                (filters.floor.includes('under') && property.type === "0") ||
-                (filters.floor.includes('1floor') && property.type === "1")
+            // 성별
+            const isMatchWithGenderRules = filters.gender.length === 0 || (
+                (filters.gender.includes('구분없음') && property.genderLimit === "GENDR00001") ||
+                (filters.gender.includes('남녀분리') && property.genderLimit === "GENDR00004") ||
+                (filters.gender.includes('여성전용') && property.genderLimit === "GENDR00003") ||
+                (filters.gender.includes('남성전용') && property.genderLimit === "GENDR00002") 
             );
         
-            // 성별 필터 적용
-            const matchesGender = filters.gender.length === 0 || (
-                (filters.gender.includes('구분없음') && property.genderLimit === "0") ||
-                (filters.gender.includes('남녀분리') && property.genderLimit === "1") ||
-                (filters.gender.includes('여성전용') && property.genderLimit === "2") ||
-                (filters.gender.includes('남성전용') && property.genderLimit === "3") 
-            );
+            // 보증금
+            const isMatchWithDeposit = property.depositMin <= (filters.deposit / 10000);
         
-            // 보증금 필터 적용
-            const matchesDeposit = property.depositMin <= (filters.deposit / 10000);
-        
-            // 월세 필터 적용 (원 -> 만원 단위로 변환해서 비교)
-            const matchesRent = property.priceMin <= (filters.rent / 10000);
+            // 월세 (원 -> 만원 단위로 변환해서 비교)
+            const isMathWithMonthlyFee = property.priceMin <= (filters.rent / 10000);
         
             // 모든 필터 조건이 일치하는 매물만 반환
-            return matchesFloor && matchesGender && matchesDeposit && matchesRent && matchesLoan;
+            if(property.houseTypeCd === "HOUTP00001" || property.houseTypeCd === "HOUTP00003" || property.houseTypeCd === "HOUTP00006") return isMatchWithType && isMatchWithLoan && isMatchWithGenderRules && isMatchWithDeposit && isMathWithMonthlyFee; 
         });
 
         // 필터링한 매물에 대한 마커 업데이트
