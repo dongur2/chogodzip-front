@@ -18,6 +18,7 @@ export default {
             });
             marker.setMap(map.value);
 
+            let title = (property.title) ? property.title : property.address;
             const infoWindow = new kakao.maps.InfoWindow({
                 content: `
                     <div style="padding:5px;font-size:12px;">
@@ -127,7 +128,7 @@ export default {
     },
 
     //컴포넌트 마운트 시 실행
-    async initializeMapAndFetchData(map, propertiesData, filteredProperties, markers, filters, universityData, tabValue, fetchDataFunction) {
+    async initializeMapAndFetchData(map, propertiesData, filteredProperties, markers, filters, searchResourceData, tabValue, fetchDataFunction) {
         // const { query } = route.query;
         //   if (query) {
         //     searchQuery.value = query; // 검색어 세팅
@@ -152,7 +153,7 @@ export default {
             await this.fetchRoomData(map, center.getLat(), center.getLng(), propertiesData, filteredProperties, markers, filters, tabValue, fetchDataFunction);
         });
     
-        await mapSearchUtils.fetchUniversityData(universityData);
+        await mapSearchUtils.fetchSearchBaseDataList(searchResourceData);
     },
 
     

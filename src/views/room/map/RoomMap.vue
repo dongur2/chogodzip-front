@@ -9,17 +9,17 @@
       <div class="search-form">
         <form class="search-bar" @submit.prevent="requestSearch">
           <input type="text" v-model="searchQuery" name="query" placeholder="궁금한 역명이나 대학교를 검색하세요"
-            @input="handleInput" />
+            @input="handleInput" autocomplete='off' />
           <button type="submit">검색</button>
         </form>
 
         <div class="search-results-dropdown" v-if="showDropdown && searchResults.length">
           <div class="dropdown-header">
-            <button @click="closeDropdown" class="close-btn">닫기</button>
+            <button @click="closeDropdown" class="close-btn">✕</button>
           </div>
           <ul>
             <li v-for="result in searchResults" :key="result.id" @click="handleRequestSearchInModal(result)">
-              {{ result.name }} {{ result.line }} ({{ result.type }})
+              {{ result.name }}<span v-if="result.type === 'sub'">역 [{{ result.line }}]</span>
             </li>
           </ul>
         </div>
@@ -250,7 +250,7 @@
                   <div class="price-slider-group">
                     <div class="price-slider">
                       <label for="depositRange">보증금(전세금)</label>
-                       <input type="range" id="depositRange" v-model="filters.deposit" min="0" max="10000000" step="5000000" @change="submitFilters" />
+                       <input type="range" id="depositRange" v-model="filters.deposit" min="0" max="10000000" step="100000" @change="submitFilters" />
                       <span>{{ formattedDeposit }} 만원 이하</span>
                     </div>
                     <div class="price-slider">
@@ -307,7 +307,9 @@
           </div>
 
           <div v-if="property.roomId" class="card-body">
-            <h5 class="card-title">{{ property.title }}</h5>
+            <h5 v-if="tab === 'onetworoom'" class="card-title">{{ property.address }}</h5>
+            <h5 v-else class="card-title">{{ property.title }}</h5>
+
             <p v-if="property.depositMax === 0" class="card-text fs-sm">보증금 없음 | 월세 {{ property.priceMax }} 만원</p>
             <p v-else class="card-text fs-sm">보증금 {{ property.depositMax }} 만원 | 월세 {{ property.priceMax }} 만원</p>
 
@@ -321,8 +323,6 @@
             </div>
           </div>
         </div>
-
-
 
       </div>
 
@@ -370,12 +370,34 @@ import seoulGu from '@/assets/data/seoul_gu';
 
 import { useRoomStore } from '@/modules/stores/room.js';
 
-//탭
+//탭 - 스토어에서 관리
 const tab = ref(useRoomStore().roomTab);
 
+//탭 변경시 초기화
 watch(() => tab.value, (newV) => {
+  resetSearch();
+  resetFilter();
   initializeMap(newV);
 })
+
+//검색 관련 초기화
+const resetSearch = () => {
+  searchQuery.value = '';
+  searchResults.value = [];
+}
+
+//필터 관련 초기화
+const resetFilter = () => {
+  selectedDistrict.value = '관악구';
+  filters.type = [];
+  filters.gender = [];
+  filters.loan = [];
+  filters.deposit = 5000000;
+  filters.rent = 1000000;
+  filters.roomCnt = 25;
+  filters.roomType = [];
+  filters.floor = [];
+}
 
 //매물 데이터
 const propertiesData = ref([]);
@@ -402,8 +424,8 @@ const sortedProperties = computed(() => {
   }
 });
 
-//대학 데이터
-const universityData = ref([]);
+//검색(대학/전철역) 데이터
+const searchResourceData = ref([]);
 
 //검색
 const searchQuery = ref('');
@@ -463,8 +485,8 @@ const submitFilters = () => {
 
 // [검색란 입력] 이벤트: 추천 대학 이름 표시
 const handleInput = () => {
-  mapSearchUtils.suggestUniversitiesByInput(
-    universityData,
+  mapSearchUtils.suggestUniversitiesAndSubwaysByInput(
+    searchResourceData,
     searchQuery, 
     searchResults, 
     showDropdown
@@ -473,7 +495,9 @@ const handleInput = () => {
 
 // [검색란 하단 추천단어 클릭] 이벤트: 추천단어에 해당하는 대학으로 검색
 const handleRequestSearchInModal = (result) => {
+  const fetchFunction = apiMap[tab.value] || mapApi.getNearByGosiwonsInMap;
   mapSearchUtils.selectOneInModalAndSearch (
+    searchResourceData,
     showDropdown, 
     searchQuery, 
     result, 
@@ -482,19 +506,24 @@ const handleRequestSearchInModal = (result) => {
     filteredProperties, 
     markers, 
     filters, 
-    mapApi.getNearByGosiwonsInMap);
+    tab,
+    fetchFunction);
 };
 
 // 대학 검색 요청
 const requestSearch = () => {
-  mapSearchUtils.searchDataNearByUniversity(
-    map, 
+  const fetchFunction = apiMap[tab.value] || mapApi.getNearByGosiwonsInMap;
+  mapSearchUtils.searchDataNearByKeyword(
+    searchResourceData,
+    map,
+    showDropdown, 
     searchQuery, 
     propertiesData, 
     filteredProperties, 
     markers, 
     filters, 
-    mapApi.getNearByGosiwonsInMap
+    tab,
+    fetchFunction
   );
 }
 
@@ -535,8 +564,7 @@ const handleSetDistrict = (district) => {
 * 컴포넌트 마운트
 * - 지도 초기화 및 고시원 리스트 조회
 * - 지도 드래그 종료 이벤트 설정
-* - 대학 데이터 조회
-* - 관심 매물 조회
+* - 대학/전철역 데이터 조회
 */
 const initializeMap = async (tabValue) => {
   const fetchFunction = apiMap[tabValue] || mapApi.getNearByGosiwonsInMap;
@@ -546,7 +574,7 @@ const initializeMap = async (tabValue) => {
         filteredProperties,
         markers,
         filters,
-        universityData,
+        searchResourceData,
         tabValue,
         fetchFunction
   );

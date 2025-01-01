@@ -8,7 +8,6 @@ export const useRoomStore = defineStore('room', () => {
 
     const changeRoomTab = (type) => {
         initTab.value = type;
-        console.log(initTab);
     }
 
     return { roomTab, changeRoomTab };
