@@ -18,7 +18,6 @@ instance.interceptors.request.use(
   async (config) => {
     const token = await authApi.getToken();
     if (token) {
-      // 토큰이 있는 경우
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
@@ -44,9 +43,7 @@ instance.interceptors.response.use(
   async (error) => {
     //로그인 필요
     if (error.response?.status === 401) {
-      const { logout } = useAuthStore();
-      logout();
-      router.push('/auth/login?error=loing_required');
+      alert('로그인이 필요한 서비스입니다.');
       return Promise.reject({ error: '로그인이 필요한 서비스입니다.' });
 
     //권한 부족

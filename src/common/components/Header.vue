@@ -55,9 +55,9 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">방 찾기</a>
                         <ul class="dropdown-menu">
-                            <li><router-link class="dropdown-item" :to="{ name: 'gosiwon' }">고시원</router-link></li>
-                            <li><router-link class="dropdown-item" :to="{ name: 'onetworoom' }">원·투룸</router-link></li>
-                            <li><router-link class="dropdown-item" :to="{ name: 'sharehouse' }">공유주거공간</router-link></li>
+                            <li><router-link class="dropdown-item" :to="{ name: 'roomMap' }" @click="roomStore.changeRoomTab('gosiwon')">고시원</router-link></li>
+                            <li><router-link class="dropdown-item" :to="{ name: 'roomMap' }" @click="roomStore.changeRoomTab('onetworoom')">원·투룸</router-link></li>
+                            <li><router-link class="dropdown-item" :to="{ name: 'roomMap' }" @click="roomStore.changeRoomTab('sharehouse')">공유주거공간</router-link></li>
                         </ul>
                     </li>
                     <!-- <li class="nav-item dropdown">
@@ -83,9 +83,12 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
 import authApi from '@/api/authApi';
+import { useRoomStore } from '@/modules/stores/room';
 
 const accessToken = ref(localStorage.getItem('accessToken'));
 const isLogin = ref(false);
+
+const roomStore = useRoomStore();
 
 const userInfo = reactive({
     nickname: '',

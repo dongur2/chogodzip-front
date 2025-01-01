@@ -2,7 +2,10 @@
   <div class="container">
     <hr />
     <div class="tab-navigation d-flex">
-      <a class="tab-item" :class="{ active: activeTab === 'gosiwon' }" @click.prevent="setTab('gosiwon')">고시원</a>
+      <a v-if="tab==='gosiwon'" class="tab-item" style="color:var(--main1)">고시원</a>
+      <a v-if="tab==='onetworoom'" class="tab-item" style="color:var(--main1)">원∙투룸</a>
+      <a v-if="tab==='sharehouse'" class="tab-item" style="color:var(--main1)">쉐어하우스</a>
+
       <div class="search-form">
         <form class="search-bar" @submit.prevent="requestSearch">
           <input type="text" v-model="searchQuery" name="query" placeholder="궁금한 역명이나 대학교를 검색하세요"
@@ -21,7 +24,6 @@
           </ul>
         </div>
       </div>
-
     </div>
 
     <div class="accordion" id="exampleAccordion">
@@ -35,7 +37,10 @@
         </h2>
         <div id="filterCollapse" class="accordion-collapse collapse show" aria-labelledby="headingFilter"
           data-bs-parent="#exampleAccordion">
-          <div class="accordion-body">
+
+
+          <!-- 필터링 체크박스 -->
+          <div class="accordion-body" v-if="tab ==='gosiwon'">
             <div class="filter-section">
               <div class="row">
                 <!-- 방 종류 -->
@@ -108,15 +113,158 @@
                   </div>
                 </div>
               </div>
-<!-- 
-              <div class="button-group">
-                <div class="submit-button-container">
-                  <button class="btn btn-submit" @click="submitFilters">필터 적용</button>
-                  <button class="btn btn-reset" @click="resetFilters">조건 초기화</button>
-                </div>
-              </div> -->
             </div>
           </div>
+
+          <div class="accordion-body" v-if="tab ==='onetworoom'">
+            <div class="filter-section">
+              <div class="row">
+                <div class="filter-box">
+                  <h5>대출</h5>
+                  <div class="checkbox-group vertical">
+
+                    <label>
+                      <input type="checkbox" value="loanPossible" v-model="filters.loan" @change="submitFilters" />
+                      &nbsp 대출가능여부
+                    </label>
+
+                  </div>
+                </div>
+
+                <div class="filter-box">
+                  <h5>방 종류</h5>
+                  <div class="checkbox-group vertical">
+                    <label>
+                      <input type="checkbox" value="open" v-model="filters.roomType" @change="submitFilters" />
+                      &nbsp 원룸(오픈형)
+                    </label>
+                    <label>
+                      <input type="checkbox" value="another" v-model="filters.roomType" @change="submitFilters" />
+                      &nbsp 원룸(분리형)
+                    </label>
+                    <label>
+                      <input type="checkbox" value="2room" v-model="filters.roomType" @change="submitFilters" />
+                      &nbsp 투룸
+                    </label>
+                    <label>
+                      <input type="checkbox" value="3room" v-model="filters.roomType" @change="submitFilters" />
+                      &nbsp 쓰리룸
+                    </label>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="filter-box">
+                  <h5>층수</h5>
+                  <div class="checkbox-group vertical">
+                    <label>
+                      <input type="checkbox" value="반지하" v-model="filters.floor" @change="submitFilters" />
+                      &nbsp 반지하/지하
+                    </label>
+                    <label>
+                      <input type="checkbox" value="1층" v-model="filters.floor" @change="submitFilters" />
+                      &nbsp 1층
+                    </label>
+                    <label>
+                      <input type="checkbox" value="2층이상" v-model="filters.floor" @change="submitFilters" />
+                      &nbsp 2층 이상
+                    </label>
+                    
+                  </div>
+                </div>
+                <div class="filter-box">
+                  <div class="price-slider-group">
+                    <div class="price-slider">
+                      <label for="depositRange">보증금(전세금)</label>
+                       <input type="range" id="depositRange" v-model="filters.deposit" min="0" max="300000000" step="1000000" @change="submitFilters" >
+                      <span>{{ formattedDeposit == 0 ? "보증금 없음" :  `${formattedDeposit} 만원 이하`}}</span>
+                    </div>
+                    <div class="price-slider">
+                      <label for="rentRange">월세</label>
+                      <input type="range" id="rentRange" v-model="filters.rent" min="0" max="3000000" step="100000" @change="submitFilters" >
+                      <span>{{ formattedRent }} 만원 이하</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-body" v-if="tab ==='sharehouse'">
+            <div class="filter-section">
+              <div class="row">
+                <div class="filter-box">
+                  <h5>대출</h5>
+                  <div class="checkbox-group vertical">
+                    <label>
+                      <input type="checkbox" value="loanPossible" v-model="filters.loan"  @change="submitFilters" />
+                      &nbsp 대출가능
+                    </label>
+                  </div>
+                </div>
+
+                <div class="filter-box">
+                  
+                  <div class="checkbox-group vertical">
+                    <div class="price-slider-group">
+                    <div class="price-slider">
+                      <label for="roomRange">건물 호실 개수</label>
+                       <input type="range" id="roomRange" v-model="filters.roomCnt" min="1" max="50" step="1" @change="submitFilters" />
+                      <span>{{ filters.roomCnt }}개</span>
+                    </div>
+                    <!-- <div class="price-slider">
+                      <label for="ageRange">입주 최소 나이</label>
+                      <input type="range" id="ageRange" v-model="filters.minAge" min="15" max="50" step="2" @change="submitFilters" />
+                      <span>{{ filters.minAge }}세</span>
+                    </div> -->
+                  </div>  
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="filter-box">
+                  <h5>성별</h5>
+                  <div class="checkbox-group vertical">
+                    <label>
+                      <input type="checkbox" value="구분없음" v-model="filters.gender" @change="submitFilters" />
+                      &nbsp 구분없음
+                    </label>
+                    <label>
+                      <input type="checkbox" value="남녀분리" v-model="filters.gender" @change="submitFilters" />
+                      &nbsp 남녀분리
+                    </label>
+                    <label>
+                      <input type="checkbox" value="여성전용" v-model="filters.gender" @change="submitFilters" />
+                      &nbsp 여성전용
+                    </label>
+                    <label>
+                      <input type="checkbox" value="남성전용" v-model="filters.gender" @change="submitFilters" />
+                      &nbsp 남성전용
+                    </label>
+                  </div>
+                </div>
+                <div class="filter-box">
+                  <div class="price-slider-group">
+                    <div class="price-slider">
+                      <label for="depositRange">보증금(전세금)</label>
+                       <input type="range" id="depositRange" v-model="filters.deposit" min="0" max="10000000" step="5000000" @change="submitFilters" />
+                      <span>{{ formattedDeposit }} 만원 이하</span>
+                    </div>
+                    <div class="price-slider">
+                      <label for="rentRange">월세</label>
+                      <input type="range" id="rentRange" v-model="filters.rent" min="0" max="2000000" step="50000" @change="submitFilters" />
+                      <span>{{ formattedRent }} 만원 이하</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
         </div>
       </div>
     </div>
@@ -140,35 +288,36 @@
           </div>
         </div>
 
-        <div v-for="(property, index) in sortedProperties" :key="property.roomId" class="card"
-          @mouseover="logRoomId(property.roomId, index)">
+        <div v-for="(property) in sortedProperties" :key="property.roomId" class="card">
           <!-- 이미지와 판매완료 오버레이 -->
           <div class="image-container">
             <img :src="property.thumbnail || 'https://via.placeholder.com/150'" class="card-img-top" alt="Property Image">
 
             <!-- 판매완료 오버레이 (판매 완료일 때 표시) -->
-            <div v-if="property.isSoldOut == '1'" class="sold-overlay">
+            <!-- <div v-if="property.isSoldOut == '1'" class="sold-overlay">
               <i class="bi bi-check-circle"></i>
               <p>판매완료</p>
-            </div>
+            </div> -->
 
-            <!-- 좋아요 개수와 하트 아이콘 (판매 완료가 아닐 때 표시) -->
+            <!-- 좋아요 개수와 하트 아이콘 (판매 완료가 아닐 때 표시)
             <div v-if="property.isSoldOut == '0'" class="like-overlay">
               <i class="bi bi-heart-fill"></i>
               <p :style="{ color: 'white' }">{{ favoriteCnt[index] }}</p>
-            </div>
+            </div> -->
           </div>
 
-          <div class="card-body">
+          <div v-if="property.roomId" class="card-body">
             <h5 class="card-title">{{ property.title }}</h5>
             <p v-if="property.depositMax === 0" class="card-text fs-sm">보증금 없음 | 월세 {{ property.priceMax }} 만원</p>
             <p v-else class="card-text fs-sm">보증금 {{ property.depositMax }} 만원 | 월세 {{ property.priceMax }} 만원</p>
 
-            <router-link :to="`/rooms/${property.roomId}`" class="btn btn-sm btn-primary">상세보기</router-link>
+            <div class="d-flex align-items-center justify-content-between">
+              <router-link v-if="property.roomId" 
+              :to="{ name: 'roomInfo', params: { roomId: property.roomId }  }" class="btn btn-sm btn-primary">상세보기</router-link>
 
-            <!-- 관심매물 아이콘 -->
-            <div class="interest-icon mt-2">
-              <i :class="heartIcons[index]" @click="toggleHeartIcon(index)"></i>
+              <!-- 관심매물 아이콘 -->
+              <i :class="property.isInterested ? 'fa-solid fa-heart' : 'fa-regular fa-heart'" style="font-size: 1.5rem; cursor:pointer"
+              @click="toggleInterest(property)"/>
             </div>
           </div>
         </div>
@@ -179,7 +328,6 @@
 
       <div id="map" class="map">
         <div class="map-overlay">
-          <!-- <div class="location-filters"> -->
           <!-- 시/도 선택 -->
           <div class="btn-group">
             <button type="button" class="btn btn-filter">
@@ -209,19 +357,25 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 
 import mapRoomUtils from '@/modules/components/room/util/mapRoomUtils';
 import mapFilterUtils from '@/modules/components/room/util/mapFilterUtils';
 import mapSearchUtils from '@/modules/components/room/util/mapSearchUtils';
 
-import mapApi from '@/api/room/mapApi'; // 고시원 데이터를 가져올 api 파일
+import mapApi from '@/api/room/mapApi';
+import interestApi from '@/api/room/interestApi';
 
 import seoulGu from '@/assets/data/seoul_gu';
 
+import { useRoomStore } from '@/modules/stores/room.js';
+
 //탭
-const activeTab = ref('gosiwon');
+const tab = ref(useRoomStore().roomTab);
+
+watch(() => tab.value, (newV) => {
+  initializeMap(newV);
+})
 
 //매물 데이터
 const propertiesData = ref([]);
@@ -251,11 +405,6 @@ const sortedProperties = computed(() => {
 //대학 데이터
 const universityData = ref([]);
 
-//관심매물
-const interestData = ref([]);
-const heartIcons = ref([]);
-const favoriteCnt = ref([]);
-
 //검색
 const searchQuery = ref('');
 const searchResults = ref([]);
@@ -279,6 +428,14 @@ const filters = reactive({
     loan: [],
     deposit: 5000000,
     rent: 1000000,
+
+    //sharehouse
+    roomCnt: 25,
+    // minAge: 15,
+    
+    //onetworoom
+    roomType: [],
+    floor: [],
 });
 
 // 필터 박스
@@ -299,6 +456,7 @@ const submitFilters = () => {
     filters,
     markers, 
     propertiesData, 
+    tab,
     filteredProperties
   ); // 필터 적용
 };
@@ -322,76 +480,41 @@ const handleRequestSearchInModal = (result) => {
     map, 
     propertiesData, 
     filteredProperties, 
-    heartIcons, 
     markers, 
     filters, 
     mapApi.getNearByGosiwonsInMap);
 };
 
-const logRoomId = async (roomId, index) => {
-  try {
-    const data = await mapApi.getFavoriteCnt(roomId);
-    favoriteCnt.value[index] = data; // 매물의 인덱스에 맞게 좋아요 개수 저장
-    console.log(`Room ID: ${roomId}, Likes: ${data}`);
-  } catch (error) {
-    console.error('좋아요 개수를 받을 수 없음.');
-  }
-  console.log('Room ID:', roomId);
-};
-
-//대학 검색 요청
+// 대학 검색 요청
 const requestSearch = () => {
   mapSearchUtils.searchDataNearByUniversity(
     map, 
     searchQuery, 
     propertiesData, 
     filteredProperties, 
-    heartIcons, 
     markers, 
     filters, 
     mapApi.getNearByGosiwonsInMap
   );
 }
 
-
-const toggleHeartIcon = async (index) => {
-  // console.log('Selected Room ID: ', propertiesData.value[index].roomId);
-  // try {
-  //   const roomId = propertiesData.value[index].roomId;
-  //   // const userId = id.value; // 로그인한 사용자의 ID
-    
-  //   if (islogin.value && userId) {
-  //     const params = { userId: userId, roomId: roomId };
-  //     console.log('Current heart icon class:', heartIcons.value[index]);
-
-  //     if (heartIcons.value[index] === 'far fa-heart') {
-  //       // 관심 매물 추가
-  //       const response = await interestApi.addInterest(params);  // API 호출
-  //       console.log('Interest added:', response);
-        
-  //       // 하트 아이콘을 색칠된 상태로 변경
-  //       heartIcons.value[index] = 'fas fa-heart';
-  //     } else if(heartIcons.value[index] === 'fas fa-heart') {
-  //       // 관심 매물 삭제
-  //       const response = await interestApi.deleteInterest(params);  // 관심 매물 삭제 API 호출
-  //       console.log('Interest deleted:', response);
-        
-  //       // 하트 아이콘을 비어있는 상태로 변경
-  //       heartIcons.value[index] = 'far fa-heart';
-  //     }
-  //   } else {
-  //     console.error('로그인이 필요합니다.');
-  //   }
-  // } catch (error) {
-  //   console.error('관심 매물 처리 중 오류 발생:', error);
-  // }
+// 관심매물 토글
+const toggleInterest = async (property) => {
+  let data = await interestApi.toggleInterest(property.roomId);
+  property.isInterested = data;
 };
 
 
+const apiMap = {
+  gosiwon: mapApi.getNearByGosiwonsInMap,
+  onetworoom: mapApi.getNearByOnetwoRoomsInMap,
+  sharehouse: mapApi.getNearByShareHousesInMap,
+};
 
 
-//구 선택 
+// 구 선택 
 const handleSetDistrict = (district) => {
+  const fetchFunction = apiMap[tab.value] || mapApi.getNearByGosiwonsInMap;
   mapFilterUtils.setDistrict(
     map, 
     selectedDistrict, 
@@ -401,10 +524,10 @@ const handleSetDistrict = (district) => {
     district, 
     propertiesData, 
     filteredProperties, 
-    heartIcons, 
     markers, 
     filters, 
-    mapApi.getNearByGosiwonsInMap);
+    tab,
+    fetchFunction);
 }
 
 
@@ -415,19 +538,22 @@ const handleSetDistrict = (district) => {
 * - 대학 데이터 조회
 * - 관심 매물 조회
 */
-onMounted(async () => {
+const initializeMap = async (tabValue) => {
+  const fetchFunction = apiMap[tabValue] || mapApi.getNearByGosiwonsInMap;
   await mapRoomUtils.initializeMapAndFetchData(
-    map, 
-    propertiesData, 
-    filteredProperties, 
-    interestData, 
-    heartIcons, 
-    markers, 
-    filters, 
-    universityData, 
-    mapApi.getNearByGosiwonsInMap);
-  },
-);
+        map,
+        propertiesData,
+        filteredProperties,
+        markers,
+        filters,
+        universityData,
+        tabValue,
+        fetchFunction
+  );
+}
+onMounted(async () => {
+  await initializeMap(tab.value);
+});
 </script>
 
 

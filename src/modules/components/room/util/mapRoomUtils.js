@@ -49,67 +49,85 @@ export default {
 
 
     // 매물 필터링
-    async applyFilters (map, filters, markers, propertiesData, filteredProperties) {
+    async applyFilters (map, filters, markers, propertiesData, tabValue, filteredProperties) {
         filteredProperties.value = propertiesData.value.filter((property) => {
+
             //타입
-            const isMatchWithType = filters.type.length === 0 || (
-                (filters.type.includes('HOUTP00001') && property.houseTypeCd === "HOUTP00001") ||
-                (filters.type.includes('HOUTP00003') && property.houseTypeCd === "HOUTP00003") ||
-                (filters.type.includes('HOUTP00003') && property.houseTypeCd === "HOUTP00006") //06:모텔은 원룸텔로 분류됨
-            );
+            let isMatchWithType = false;
+            if(tabValue === 'gosiwon' || tabValue.value === 'gosiwon') {
+                isMatchWithType = filters.type.length === 0 || (
+                    (filters.type.includes('HOUTP00001') && property.houseTypeCd === 'HOUTP00001') ||
+                    (filters.type.includes('HOUTP00003') && property.houseTypeCd === 'HOUTP00003' || property.houseTypeCd === 'HOUTP00006')
+                );
+
+            } else if(tabValue === 'onetworoom' || tabValue.value === 'onetworoom') {
+                isMatchWithType = filters.type.length === 0 || (
+                    (filters.type.includes('HOUTP00008') && property.houseTypeCd === "HOUTP00008") ||
+                    (filters.type.includes('HOUTP00009') && property.houseTypeCd === "HOUTP00009")
+                );
+
+            } else if(tabValue === 'sharehouse' || tabValue.value === 'sharehouse') {
+                isMatchWithType = filters.type.length === 0 || (
+                    (filters.type.includes('HOUTP00002') && property.houseTypeCd === "HOUTP00002") ||
+                    (filters.type.includes('HOUTP00004') && property.houseTypeCd === "HOUTP00004") ||
+                    (filters.type.includes('HOUTP00005') && property.houseTypeCd === "HOUTP00005")
+                );
+            }
 
             // 대출 
-            const isMatchWithLoan = filters.loan.length === 0 || property.canLoan;
+            let isMatchWithLoan = filters.loan.length === 0 || property.canLoan;
         
             // 성별
-            const isMatchWithGenderRules = filters.gender.length === 0 || (
+            let isMatchWithGenderRules = filters.gender.length === 0 || (
                 (filters.gender.includes('구분없음') && property.genderLimit === "GENDR00001") ||
                 (filters.gender.includes('남녀분리') && property.genderLimit === "GENDR00004") ||
                 (filters.gender.includes('여성전용') && property.genderLimit === "GENDR00003") ||
                 (filters.gender.includes('남성전용') && property.genderLimit === "GENDR00002") 
             );
-        
+
             // 보증금
-            const isMatchWithDeposit = property.depositMin <= (filters.deposit / 10000);
+            let isMatchWithDeposit = property.depositMin <= (filters.deposit / 10000);
         
             // 월세 (원 -> 만원 단위로 변환해서 비교)
-            const isMathWithMonthlyFee = property.priceMin <= (filters.rent / 10000);
-        
+            let isMatchWithMonthlyFee = property.priceMin <= (filters.rent / 10000);
+
+            // 원투룸 - 원룸 유형/투룸/쓰리룸
+            let isMatchWithRoomType = (tabValue === 'onetworoom' || tabValue.value === 'onetworoom') ? 
+            (
+                (filters.roomType.length === 0) ||
+                (filters.roomType.includes('open') && property.roomType === '원룸(오픈형)') ||
+                (filters.roomType.includes('another') && property.roomType === '원룸(분리형)') ||
+                (filters.roomType.includes('2room') && property.roomType === '투룸') ||
+                (filters.roomType.includes('3room') && property.roomType === '쓰리룸')
+            ) : true;
+
+            // 원투룸 - 층수
+            let isMatchWithFloor = (tabValue === 'onetworoom' || tabValue.value === 'onetworoom') ? 
+            (
+                (filters.floor.length === 0) ||
+                (filters.floor.includes('반지하') && property.roomAddrFl < 0) ||
+                (filters.floor.includes('1층') && property.roomAddrFl == 1) ||
+                (filters.floor.includes('2층이상') && property.roomAddrFl > 1)
+            ) : true;
+
+            // 쉐어하우스 총 방 개수
+            let isMatchWithAccomoCnt = (tabValue === 'sharehouse' || tabValue.value === 'sharehouse') ? property.accomoCnt <= filters.roomCnt : true;
+            
             // 모든 필터 조건이 일치하는 매물만 반환
-            if(property.houseTypeCd === "HOUTP00001" || property.houseTypeCd === "HOUTP00003" || property.houseTypeCd === "HOUTP00006") return isMatchWithType && isMatchWithLoan && isMatchWithGenderRules && isMatchWithDeposit && isMathWithMonthlyFee; 
+            if(property.houseTypeCd === "HOUTP00001" || property.houseTypeCd === "HOUTP00003" || property.houseTypeCd === "HOUTP00006") 
+                return isMatchWithType && isMatchWithLoan && isMatchWithGenderRules && isMatchWithDeposit && isMatchWithMonthlyFee;
+            else if(property.houseTypeCd === "HOUTP00008" || property.houseTypeCd === "HOUTP00009" )
+                return isMatchWithType && isMatchWithLoan && isMatchWithDeposit && isMatchWithMonthlyFee && isMatchWithRoomType && isMatchWithFloor;
+            else if(property.houseTypeCd === "HOUTP00002" || property.houseTypeCd === "HOUTP00004" || property.houseTypeCd === "HOUTP00005")
+                return isMatchWithType && isMatchWithLoan && isMatchWithGenderRules && isMatchWithDeposit && isMatchWithMonthlyFee && isMatchWithAccomoCnt;
         });
 
         // 필터링한 매물에 대한 마커 업데이트
         await this.updateMarkers(map, markers, filteredProperties);
     },
 
-
-    // 관심 매물 조회
-    async fetchInterestData (interestData, id) {
-        console.log('Fetching interest data for id:', id); 
-        try {
-          const data = await interestApi.getInterestList(id);
-          interestData = data;
-          console.log('interest dataaa : ', interestData);
-          this.updateHeartIcons(heartIcons, propertiesData, interestData);
-      
-        }catch(error) {
-          console.error('관심매물 못 불러옴',error);
-        }
-    },
-
-
-    // 관심 매물 데이터를 바탕으로 하트 아이콘 초기화
-    async updateHeartIcons (heartIcons, propertiesData, interestData) {
-        heartIcons.value = propertiesData.map(property => {
-            const isFavorite = interestData.some(interest => interest.roomId === property.roomId);
-            return isFavorite ? 'fas fa-heart' : 'far fa-heart'; // 색칠된 아이콘과 흰색 아이콘
-        });
-    },
-
-
     //컴포넌트 마운트 시 실행
-    async initializeMapAndFetchData(map, propertiesData, filteredProperties, interestData, heartIcons, markers, filters, universityData, fetchDataFunction) {
+    async initializeMapAndFetchData(map, propertiesData, filteredProperties, markers, filters, universityData, tabValue, fetchDataFunction) {
         // const { query } = route.query;
         //   if (query) {
         //     searchQuery.value = query; // 검색어 세팅
@@ -124,33 +142,30 @@ export default {
 
         map.value = new kakao.maps.Map(container, options);
     
-        //지도 중심 좌표를 기반으로 고시원 매물 조회
+        //지도 중심 좌표를 기반으로 매물 조회
         const center = map.value.getCenter();
-        await this.fetchRoomData(map, center.getLat(), center.getLng(), propertiesData, filteredProperties, heartIcons, markers, filters, fetchDataFunction);
+        await this.fetchRoomData(map, center.getLat(), center.getLng(), propertiesData, filteredProperties, markers, filters, tabValue, fetchDataFunction);
     
-        //[지도 드래그가 종료되었을 때] 이벤트 설정: 드래그 후 이동한 '새로운 중심 좌표'를 기반으로 고시원 매물 조회
+        //[지도 드래그가 종료되었을 때] 이벤트 설정: 드래그 후 이동한 '새로운 중심 좌표'를 기반으로 매물 조회
         kakao.maps.event.addListener(map.value, 'dragend', async () => {
             const center = map.value.getCenter();
-            await this.fetchRoomData(map, center.getLat(), center.getLng(), propertiesData, filteredProperties, heartIcons, markers, filters, fetchDataFunction);
+            await this.fetchRoomData(map, center.getLat(), center.getLng(), propertiesData, filteredProperties, markers, filters, tabValue, fetchDataFunction);
         });
     
         await mapSearchUtils.fetchUniversityData(universityData);
-        // await this.fetchInterestData(interestData, id.value);
     },
 
     
     //좌표 기반 주변 매물 조회
-    async fetchRoomData (map, lat, lng, propertiesData, filteredProperties, heartIcons, markers, filters, fetchFunction) {
+    async fetchRoomData (map, lat, lng, propertiesData, filteredProperties, markers, filters, tabValue, fetchFunction) {
         try {
             const params = { lat, lng };
             const data = await fetchFunction({ params });
-            
+
             propertiesData.value = data; // 받아온 데이터를 상태에 저장
 
-            // heartIcons.value = Array(data.length).fill('far fa-heart'); // 하트 아이콘 초기화
-
             // 필터 적용
-            await this.applyFilters(map, filters, markers, propertiesData, filteredProperties);
+            await this.applyFilters(map, filters, markers, propertiesData, tabValue, filteredProperties);
 
         const clusterer = new kakao.maps.MarkerClusterer({
             map: map.value,
@@ -160,8 +175,6 @@ export default {
     
         clusterer.addMarkers(markers);
 
-        // this.updateHeartIcons(heartIcons, propertiesData, interestData);
-    
     } catch (error) {
         console.error('매물 데이터를 가져오는 중 오류 발생:', error);
     }

@@ -1,18 +1,13 @@
 export default [
   {
-    path: "/rooms/map/gosiwons",
-    name: "gosiwon",
-    component: () => import("../views/room/map/Gosiwon.vue"),
+    path : '/rooms/:roomId',
+    name : 'roomInfo',
+    component : () => import('../views/room/info/RoomInfo.vue'),
   },
   {
-    path: '/rooms/map/sharehouses',
-    name: 'sharehouse',
-    component: () => import('../views/room/Sharehouse.vue'),
-  },
-  {
-    path: '/rooms/map/onetworooms',
-    name: 'onetworoom',
-    component: () => import('../views/room/Onetworoom.vue'),
+    path: "/rooms/map",
+    name: "roomMap",
+    component: () => import("@/views/room/map/RoomMap.vue"),
   },
   {
     path: "/rooms/onetworooms/:id",

@@ -4,7 +4,7 @@ export default {
 
     // 구 선택 처리
     setDistrict (map, selectedDistrict, selectedNeighborhood, showDistrictSelect, districtCoordinates, district, 
-                    propertiesData, filteredProperties, heartIcons, markers, filters, fetchDataFunction)  {
+                    propertiesData, filteredProperties, markers, filters, tabValue, fetchDataFunction)  {
         selectedDistrict.value = district;
         selectedNeighborhood.value = '';
         showDistrictSelect.value = false;
@@ -16,7 +16,7 @@ export default {
 
             if (map.value) {
                 map.value.setCenter(newCenter); // 지도 중심을 이동
-                mapRoomUtils.fetchRoomData(map, newCenter.getLat(), newCenter.getLng(), propertiesData, filteredProperties, heartIcons, markers, filters, fetchDataFunction);
+                mapRoomUtils.fetchRoomData(map, newCenter.getLat(), newCenter.getLng(), propertiesData, filteredProperties, markers, filters, tabValue, fetchDataFunction);
             
             } else console.error('Map is not initialized');
         }
