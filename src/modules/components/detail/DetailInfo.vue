@@ -1,102 +1,116 @@
 <template>
     <div class="white-box p-5 mb-4">
         <div class="d-flex justify-content-center h4">
-            <span>{{ cardData.room.address }} {{ cardData.detailAddress }}</span>
+            <span>{{ room.address }}</span>
         </div>
 
-        <!-- Conditionally render features based on parsed facilities and services -->
-        <div class="features d-flex justify-content-between">
-            <div class="feature">
-                <img :src="ApartmentIcon" alt="Loan Icon" />
-                <span>{{ parsedPrivateFacilities.includes('개인화장실') ? '개인화장실' : '공용화장실' }}</span>
+        <!-- 고시원, 공용주거: 식사/화장실/창문/성별 -->
+        <div v-if="room.houseTypeCd === 'HOUTP00001' || room.houseTypeCd === 'HOUTP00003' || room.houseTypeCd === 'HOUTP00006'
+        || room.houseTypeCd === 'HOUTP00002' || room.houseTypeCd === 'HOUTP00004' || room.houseTypeCd === 'HOUTP00005'" 
+        class="features py-3 my-4">
+            <div class="d-flex align-items-center justify-content-around">
+                <div class="d-flex fs-lg">
+                    <i class="fas fa-utensils me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">{{ room.services !== null && room.services.includes('freeMeal') ? '식사 제공' : '식사 미제공' }}</span>
+                </div>
+                <div class="d-flex fs-lg">
+                    <i class="fas fa-shower me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">{{ room.privateFacilities !== null && room.privateFacilities.includes('priToilet') ? '개인 화장실' : '공용 화장실' }}</span>
+                </div>
+                <div class="d-flex fs-lg">
+                    <i class="fas fa-border-all me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">
+                        {{ windowType }}
+                    </span>
+                </div>
+                <div class="d-flex fs-lg">
+                    <i class="fas fa-restroom me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">
+                        {{ genderType }}
+                    </span>
+                </div>
             </div>
-            <div class="feature">
-                <img :src="FoodIcon" height="45" width="45" alt="식사" />
-                <span>{{ parsedServices.includes('식사제공') ? '식사제공' : '식사 미제공' }}</span>
-            </div>
-            <div class="feature">
-                <img :src="DepartmentIcon" alt="Room Icon" />
-                <span>{{ cardData.floor !== null && cardData.floor !== undefined ? cardData.floor + '층' : '정보없음' }}</span>
-            </div>
-            <div class="feature">
-                <img :src="DepartmentIcon" alt="Area Icon" />
-                <span>{{ cardData.roomCnt !== null && cardData.roomCnt !== undefined ? cardData.roomCnt + '개' : '정보없음' }}</span>
-            </div>
-            <div class="feature">
-                <img :src="ParkingIcon" alt="Parking Icon" />
-                <span>{{ cardData.canParking ? '주차가능' : '주차불가능' }}</span>
-            </div>
-            <div class="feature">
-                <img :src="ToiletIcon" alt="Gender Icon" />
-                <span>{{ genderType }}</span>
+        </div>
+        
+        <!-- 원투룸: 층수/방타입/주차/동물 -->
+        <div v-else class="features py-3 my-4">
+            <div class="d-flex align-items-center justify-content-around">
+                <div class="d-flex fs-lg">
+                    <i class="far fa-building me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">{{ floorType }}</span>
+                </div>
+                <div class="d-flex fs-lg">
+                    <i class="fas fa-home me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">{{ room.roomType }}</span>
+                </div>
+                <div class="d-flex fs-lg">
+                    <i class="fas fa-parking me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">
+                        {{ room.canParking !== null && room.canParking ? '주차 가능' : '주차 불가' }}
+                    </span>
+                </div>
+                <div class="d-flex fs-lg">
+                    <i class="fas fa-cat me-3" style="font-size:2.5rem"/>
+                    <span class="d-flex align-items-center">
+                        {{ petLimit }}
+                    </span>
+                </div>
             </div>
         </div>
 
-        <div class="description">
-            <p>{{ cardData.description }}</p>
+        <div class="text-center">
+            <p v-if="room.description === null">상세 설명이 없습니다 🥲 </p>
+            <p v-else>{{ room.description }}</p>
             <!-- <div class="more-button main1 mt-2" type="button"><strong>소개 더보기</strong></div> -->
         </div>
     </div>
 </template>
 
 <script setup>
-import ApartmentIcon from '@/assets/img/detail/Apartment.png';
-import DepartmentIcon from '@/assets/img/detail/Department.png';
-import ParkingIcon from '@/assets/img/detail/Parking.png';
-import ToiletIcon from '@/assets/img/detail/Toilet.png';
-import FoodIcon from '@/assets/img/detail/Food.png';
-import { computed } from 'vue';
-import { defineProps } from 'vue';
+import { computed, defineProps } from 'vue';
 
 const props = defineProps({
-    cardData: {
+    room: {
         type: Object,
         required: true
     },
-    
 });
 
-// Parse private facilities and services from cardData
-const parsedPrivateFacilities = computed(() => {
-    return props.cardData.privateFacilities ? props.cardData.privateFacilities.split('|') : [];
-});
-
-const parsedServices = computed(() => {
-    return props.cardData.services ? props.cardData.services.split('|') : [];
-});
-
-// Determine gender type based on genderLimit
+//성별제한
 const genderType = computed(() => {
-    switch (props.cardData.genderLimit) {
-        case 1:
-            return '남성전용';
-        case 2:
-            return '여성전용';
-        case 3:
-            return '남녀분리';
-        default:
-            return '남녀공용';
+    switch(props.room.genderLimit) {
+        case 'GENDR00001': return '성별구분없음';
+        case 'GENDR00002': return '남성전용';
+        case 'GENDR00003': return '여성전용';
+        case 'GENDR00004': return '남녀분리';
     }
 });
+
+//창문
+const windowType = computed(() => {
+    if(props.room.facilityLife === null || props.room.facilityLife.includes('noWindow')) return '창문없음';
+    else if(props.room.facilityLife.includes('outsideWindow')) return '외창있음';
+    else if(props.room.facilityLife.includes('insideWindow')) return '내창있음';
+})
+
+//층수
+const floorType = computed(() => {
+    if(props.room.roomAddrFl === null) return '문의필요';
+    else if(props.room.roomAddrFl < 1) return '반지하/지하';
+    else if(props.room.roomAddrFl === 1) return '1층';
+    else if(props.room.roomAddrFl > 1) return '2층 이상';
+})
+
+//반려동물
+const petLimit = computed(() => {
+    if(props.room.etc === null || props.room.etc === undefined) return '문의필요';
+    else return props.room.etc.split('|').includes('allowPet') ? '반려동물 가능' : '반려동물 불가';
+})
 </script>
 
 <style scoped>
-.main1 {
-    color: #7747b5;
-}
-
 .features {
-    padding: 1.5rem 1rem 1.5rem 1rem;
     border-top: solid 1px #d9d9d9;
     border-bottom: solid 1px #d9d9d9;
-    margin: 3rem auto 3rem;
-}
-
-.features img {
-    margin-right: 0.3rem;
-}
-
-.description {
-    text-align: center;
 }
 </style>

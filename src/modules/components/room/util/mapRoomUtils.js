@@ -23,7 +23,7 @@ export default {
                 content: `
                     <div style="padding:5px;font-size:12px;">
                         <a href="/rooms/${property.roomId}" style="text-decoration:none; color:blue;">
-                            ${property.title}<br/>월세: ${property.priceMax} 만원
+                            ${title}<br/>월세: ${property.priceMax} 만원
                         </a>
                     </div>
                 `,

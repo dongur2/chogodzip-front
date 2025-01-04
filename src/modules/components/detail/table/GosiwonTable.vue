@@ -7,48 +7,54 @@
                     <table>
                         <tbody>
                             <tr>
-                                <th>월 이용료</th>
-                                <td>{{ cardData.priceMin }} ~ {{ cardData.priceMax }}만원</td>
+                                <th>월세</th>
+                                <td v-if="room.priceMin != room.priceMax">{{ room.priceMin }} ~ {{ room.priceMax }} 만원</td>
+                                <td v-else>{{ room.priceMax }} 만원</td>
                             </tr>
                             <tr>
                                 <th>보증금</th>
-                                <td>{{ cardData.depositMin }} 만원 ~ {{ cardData.depositMax }} 만원</td>
+                                <td v-if="room.depositMin !== room.depositMax">{{ room.depositMin }} ~ {{ room.depositMax }} 만원</td>
+                                <td v-else-if="room.depositMin === room.depositMax && room.depositMax > 0">{{ room.depositMax }} 만원</td>
+                                <td v-else-if="room.depositMin === room.depositMax && room.depositMax == 0">없음</td>
                             </tr>
                             <tr>
                                 <th>관리비</th>
-                                <td>{{ cardData.maintenanceFee ? cardData.maintenanceFee+' 만원' : '없음' }} </td>
+                                <td>{{ room.maintenanceFee ? room.maintenanceFee+' 만원' : '없음' }} </td>
                             </tr>
                             <tr>
-                                <th>이용기간<br />(계약기간)</th>
-                                <td>제한없음</td>
+                                <th>최소계약기간</th>
+                                <td>{{ room.contractMin === null || room.contractMin <= 0 ? '제한 없음' : room.contractMin + ' 일'}}</td>
                             </tr>
                             <tr>
                                 <th>이용연령</th>
-                                <td>{{ cardData.ageMin && cardData.ageMax ? `${cardData.ageMin} ~ ${cardData.ageMax}세` : '연령제한 없음' }}</td>
+                                <td>{{ room.ageMin && room.ageMax ? `${room.ageMin} ~ ${room.ageMax}세` : '제한 없음' }}</td>
                             </tr>
-                            <tr>
+
+                            <!-- 고시원, 공유주거 -->
+                            <tr v-if="room.houseTypeCd !== 'HOUTP00008' && room.houseTypeCd !== 'HOUTP00009'">
                                 <th>개인화장실 여부</th>
                                 <td>{{ parsedPrivateFacilities.includes('개인화장실') ? '있음' : '없음' }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="room.houseTypeCd !== 'HOUTP00008' && room.houseTypeCd !== 'HOUTP00009'">
                                 <th>개인샤워부스 여부</th>
                                 <td>{{ parsedPrivateFacilities.includes('개인샤워실') ? '있음' : '없음' }}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="room.houseTypeCd !== 'HOUTP00008' && room.houseTypeCd !== 'HOUTP00009'">
                                 <th>남녀구분</th>
                                 <td>{{ genderType }}</td>
                             </tr>
+
                             <tr>
                                 <th>기타사항</th>
-                                <td>{{ cardData.etc ? cardData.etc : '없음' }}</td>
+                                <td>{{ room.etc ? room.etc : '없음' }}</td>
                             </tr>
                             <tr>
                                 <th>제공 서비스</th>
-                                <td>{{ parsedServices.includes('식사제공') ? '식사제공' : '식사 미제공' }}</td>
+                                <td>{{ room.services ? room.services : '없음' }}</td>
                             </tr>
                             <tr>
                                 <th>외국어 응대</th>
-                                <td>{{ cardData.languages ? cardData.languages : '불가능' }}</td>
+                                <td>{{ room.languages ? room.languages : '불가능' }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -64,17 +70,17 @@
                         <tbody>
                             <tr>
                                 <th>난방시설</th>
-                                <td>{{ cardData.facilityHeating ? cardData.facilityHeating : '난방시설 없음' }}
+                                <td>{{ room.facilityHeating ? room.facilityHeating : '없음' }}
                                 </td>
                             </tr>
                             <tr>
                                 <th>세탁시설</th>
-                                <td>{{ cardData.facilityLife && cardData.facilityLife.includes('세탁기') ? '세탁기, 건조기' : '세탁시설 없음' }}
+                                <td>{{ room.facilityLife && room.facilityLife.includes('세탁기') ? '세탁기, 건조기' : '없음' }}
                                 </td>
                             </tr>
                             <tr>
                                 <th>주방시설</th>
-                                <td>{{ cardData.facilityLife && cardData.facilityLife.includes('전자레인지') ? '전자레인지, 전기밥솥' : '주방시설 없음' }}
+                                <td>{{ room.facilityLife && room.facilityLife.includes('전자레인지') ? '전자레인지, 전기밥솥' : '없음' }}
                                 </td>
                             </tr>
                             <tr>
@@ -87,12 +93,13 @@
                             </tr>
                             <tr>
                                 <th>별도 전용공간</th>
-                                <td>{{ cardData.facilityLife && cardData.facilityLife.includes('전용공간') ? '제공' : '없음' }}</td>
+                                <td>{{ room.facilityLife ? room.facilityLife : '없음' }}</td>
                             </tr>
-                            <tr>
-                                <th>제공비품</th>
-                                <td>{{ cardData.facilityLife ? '제공' : '없음' }}</td>
 
+                            <!-- 고시원, 공유주거 -->
+                            <tr v-if="room.houseTypeCd !== 'HOUTP00008' && room.houseTypeCd !== 'HOUTP00009'">
+                                <th>제공비품</th>
+                                <td>{{ room.facilityLife ? room.facilityLife : '없음' }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -123,37 +130,36 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { defineProps } from 'vue';
+import { computed, defineProps } from 'vue';
 
 const props = defineProps({
-    cardData: {
+    room: {
         type: Object,
         required: true
     },
 });
-console.log('adfadsf',props.cardData.priceMax);
+
 // Parse private facilities and services
 const parsedPrivateFacilities = computed(() => {
-    return props.cardData.privateFacilities && props.cardData.privateFacilities !== 'null' ? props.cardData.privateFacilities.split('|') : [];
+    return props.room.privateFacilities && props.room.privateFacilities !== 'null' ? props.room.privateFacilities.split('|') : [];
 });
 
 const parsedServices = computed(() => {
-    return props.cardData.services && props.cardData.services !== 'null' ? props.cardData.services.split('|') : [];
+    return props.room.services && props.room.services !== 'null' ? props.room.services.split('|') : [];
 });
 
 const formattedLifeFacilities = computed(() => {
-    return props.cardData.facilityLife && props.cardData.facilityLife !== 'null' ? props.cardData.facilityLife.split('|').join(', ') : '없음';
+    return props.room.facilityLife && props.room.facilityLife !== 'null' ? props.room.facilityLife.split('|').join(', ') : '없음';
 });
 
 const formattedSecurityFacilities = computed(() => {
-    return props.cardData.facilitySecurity && props.cardData.facilitySecurity !== 'null' ? props.cardData.facilitySecurity.split('|').join(', ') : '없음';
+    return props.room.facilitySecurity && props.room.facilitySecurity !== 'null' ? props.room.facilitySecurity.split('|').join(', ') : '없음';
 });
 
 
 // Determine gender type based on genderLimit
 const genderType = computed(() => {
-    switch (props.cardData.genderLimit) {
+    switch (props.room.genderLimit) {
         case 0:
             return '성별 무관';
         case 1:
@@ -168,7 +174,7 @@ const genderType = computed(() => {
 });
 
 const buildingTypeLabel = computed(() => {
-    switch (props.cardData.buildingType) {
+    switch (props.room.buildingType) {
         case 0:
             return '상가건물';
         case 1:
@@ -181,11 +187,11 @@ const buildingTypeLabel = computed(() => {
 });
 
 const canParkingLabel = computed(() => {
-    return props.cardData.canParking === 0 ? '가능' : '불가능';
+    return props.room.canParking === 0 ? '가능' : '불가능';
 });
 
 const hasElevatorLabel = computed(() => {
-    return props.cardData.hasElevator === 0 ? '없음' : '있음';
+    return props.room.hasElevator === 0 ? '없음' : '있음';
 })
 </script>
 
