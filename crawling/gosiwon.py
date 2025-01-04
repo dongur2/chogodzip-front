@@ -122,8 +122,10 @@ while(1):
         if result[0] == 0:  # 데이터가 중복되지 않는 경우에만 삽입
             cursor.execute("""
             INSERT INTO ROOM
-                (ROOM_ID, ROOM_LAT, ROOM_LONG, THUMBNAIL, PICS, ADDRESS, HOUSE_TYPE_CD, HOUSE_TYPE_NM, DONGLI_NM, CONTRACT_MIN)
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (ROOM_ID, ROOM_LAT, ROOM_LONG, THUMBNAIL, PICS, ADDRESS, 
+                HOUSE_TYPE_CD, HOUSE_TYPE_NM, DONGLI_NM, 
+                CONTRACT_MIN, PRICE_MIN, PRICE_MAX, DEPOSIT_MIN, DEPOSIT_MAX, MAINTENANCE_FEE)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,(
                 room_id,
                 room_lat,
@@ -134,7 +136,12 @@ while(1):
                 house_type_cd,
                 house_type_nm,
                 dongli_nm,
-                duration_min
+                duration_min,
+                price_min,           # PRICE_MIN
+                price_max,               # PRICE_MAX
+                deposit_min,       # DEPOSIT_MIN
+                deposit_max,      # DEPOSIT_MAX
+                maintenance_fee,                       # MAINTENANCE_FEE
             ))
 
 
@@ -146,17 +153,11 @@ while(1):
         if result[0] == 0:  # 데이터가 중복되지 않는 경우에만 삽입
             cursor.execute("""
                 INSERT INTO GOSIWON
-                (ROOM_ID, TITLE, PRICE_MIN, PRICE_MAX, DEPOSIT_MIN, DEPOSIT_MAX, MAINTENANCE_FEE, 
-                GENDER_LIMIT, AGE_MAX, AGE_MIN) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (ROOM_ID, TITLE, GENDER_LIMIT, AGE_MAX, AGE_MIN) 
+                VALUES (%s, %s, %s, %s, %s)
             """, (
                 room_id,            # ROOM_ID
                 title,              # TITLE
-                price_min,           # PRICE_MIN
-                price_max,               # PRICE_MAX
-                deposit_min,       # DEPOSIT_MIN
-                deposit_max,      # DEPOSIT_MAX
-                maintenance_fee,                       # MAINTENANCE_FEE
                 gender_type_cd,             # GENDER_LIMIT
                 enter_age_max,           # AGE_MAX
                 enter_age_min,        # AGE_MIN

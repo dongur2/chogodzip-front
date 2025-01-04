@@ -123,8 +123,9 @@ while(1):
             cursor.execute("""
             INSERT INTO ROOM
                 ( ROOM_ID, ROOM_LAT, ROOM_LONG, THUMBNAIL, PICS, ADDRESS, HOUSE_TYPE_CD, HOUSE_TYPE_NM, DONGLI_NM, 
-                CONTRACT_MIN, ROOM_ADDR_FL)
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                CONTRACT_MIN, ROOM_ADDR_FL, 
+                PRICE_MIN, PRICE_MAX, DEPOSIT_MIN, DEPOSIT_MAX, MAINTENANCE_FEE)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,(
                 room_id,
                 room_lat,
@@ -136,8 +137,13 @@ while(1):
                 house_type_nm,
                 dongli_nm,
                 duration_min,
-                floor              # FLOOR
-                ))
+                floor,              # FLOOR
+                price_min,           # PRICE_MIN
+                price_max,
+                deposit_min,       # DEPOSIT_MIN
+                deposit_max,
+                maintenance_fee                       # MAINTENANCE_FEE
+            ))
 
         # SQL 실행 부분 (원,투룸 오피스텔)
         cursor.execute("SELECT COUNT(*) FROM ONETWOROOM WHERE ROOM_ID = %s", (room_id,))
@@ -146,15 +152,10 @@ while(1):
         if result[0] == 0:  # 데이터가 중복되지 않는 경우에만 삽입
             cursor.execute("""
                 INSERT INTO ONETWOROOM
-                (ROOM_ID, PRICE_MIN, PRICE_MAX, DEPOSIT_MIN, DEPOSIT_MAX, MAINTENANCE_FEE, DETAIL_NAME, ROOM_TYPE) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                (ROOM_ID, DETAIL_NAME, ROOM_TYPE) 
+                VALUES (%s, %s, %s)
             """, (
                 room_id,            # ROOM_ID
-                price_min,           # PRICE_MIN
-                price_max,
-                deposit_min,       # DEPOSIT_MIN
-                deposit_max,
-                maintenance_fee,                       # MAINTENANCE_FEE
                 title,              # TITLE
                 tag
             ))

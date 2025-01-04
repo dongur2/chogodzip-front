@@ -150,8 +150,9 @@ while(1):
             cursor.execute("""
             INSERT INTO ROOM
                 ( ROOM_ID, ROOM_LAT, ROOM_LONG, THUMBNAIL, PICS, ADDRESS,
-                HOUSE_TYPE_CD, HOUSE_TYPE_NM, DONGLI_NM, CONTRACT_MIN, ROOM_CNT)
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                HOUSE_TYPE_CD, HOUSE_TYPE_NM, DONGLI_NM, CONTRACT_MIN, ROOM_CNT,
+                PRICE_MIN, PRICE_MAX, DEPOSIT_MIN, DEPOSIT_MAX, MAINTENANCE_FEE)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,(
                 room_id,
                 room_lat,
@@ -163,7 +164,12 @@ while(1):
                 house_type_nm,
                 dongli_nm,
                 duration_min,         # CONTRACT_MIN
-                room_cnt             # ROOM_CNT
+                room_cnt,             # ROOM_CNT
+                price_min,          # PRICE_MIN
+                price_max,          # PRICE_MAX
+                deposit_min,        # DEPOSIT_MIN
+                deposit_max,        # DEPOSIT_MAX
+                maintenance_fee          # MAINTENANCE_FEE
             ))
         
         # SQL 실행 부분 (쉐어하우스)
@@ -173,16 +179,10 @@ while(1):
         if result[0] == 0:  # 데이터가 중복되지 않는 경우에만 삽입
             cursor.execute("""
                 INSERT INTO SHAREHOUSE
-                (ROOM_ID, PRICE_MIN, PRICE_MAX, DEPOSIT_MIN, DEPOSIT_MAX, MAINTENANCE_FEE, 
-                GENDER_LIMIT, AGE_MAX, AGE_MIN,  ACCOMO_CNT, TITLE) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (ROOM_ID, GENDER_LIMIT, AGE_MAX, AGE_MIN,  ACCOMO_CNT, TITLE) 
+                VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 room_id,            # ROOM_ID
-                price_min,          # PRICE_MIN
-                price_max,          # PRICE_MAX
-                deposit_min,        # DEPOSIT_MIN
-                deposit_max,        # DEPOSIT_MAX
-                maintenance_fee,          # MAINTENANCE_FEE
                 gender_type_cd,       # GENDER_LIMIT
                 enter_age_max,        # AGE_MAX
                 enter_age_min,        # AGE_MIN
