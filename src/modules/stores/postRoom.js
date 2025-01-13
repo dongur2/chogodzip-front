@@ -1,11 +1,11 @@
 import router from '@/router';
-import axios from 'axios';
 import { defineStore } from 'pinia'
-import { useAuthStore } from '@/modules/stores/auth';
+import api from '@/api/tokenApi';
+
 
 export const usePostRoomStore = defineStore('postRoom', {
     state: () => ({
-        category: null, // 대분류: 주거유형 (고시원/자취방/공우주거공간)
+        category: null, // 대분류: 주거유형 (고시원/자취방/공유주거공간)
         
         //작성 진행 상태
         progress: 0,
@@ -15,168 +15,84 @@ export const usePostRoomStore = defineStore('postRoom', {
         facilitiesFilled: false,
         buildingFilled: false,
 
+        /*
+        기본 정보 - BasicInfo
+        */
         basicInfo: {
-            title: null, //매물 이름 (ROOM: TITLE)
-            addr: {
-                postcode: null, //우편 번호 (GOSIWON: POSTCODE)
-                address: null,  //전체 주소 (ROOM: ADDRESS)
-                detailAddress: null,
-                roomLat: null, //위도 (ROOM: ROOM_LAT)
-                roomLong: null, //경도 (ROOM: ROOM_LONG)
-            },
+            title: null,
+            postcode: null,
+            address: null,
+            detailAddress: null,
+            roomLat: null,
+            roomLng: null,
 
-            price: {
-                priceMin: 0, //월세 (GOSIWON: PRICE_MIN)
-                priceMax: 0, //월세 (GOSIWON: PRICE_MAX)
-                depositMin: 0, //보증금 (GOSIWON: DEPOSIT_MIN)
-                depositMax: 0, //보증금 (GOSIWON: DEPOSIT_MAX)
-                isNoDepositFee: false,
-                maintenanceFee: 0, //관리비 (GOSIWON: MAINTENANCE_FEE)
-                isNoMaintenanceFee: false,
-            },
+            type: null,
 
-            //자취방
-            jachi: {
-                rentType: null,
-                moveIn: {
-                    moveInDate: null,
-                    canMoveInNow: false,
-                },
-                room: {
-                    roomType: null,
-                    roomStructure: null,
-                    roomCnt: 0,
-                    toiletCnt: 0,
-                    thisFloor: 0,
-                    totalFloor: 0,
-                    totalArea: 0,
-                    privateArea: 0,
-                },
-                roomDirection: null,
-            },
+            //원투룸의 경우: OTRMONTH/OTRJONSE
+            rentType: null,
 
-            //자취 외 공통
-            jachiElse: {
-                age: {
-                    ageMin: 0, //최소 연령 (GOSIWON: AGE_MIN - INT)
-                    ageMax: 0, //최대 연령 (GOSIWON: AGE_MAX - INT)
-                    isNoAgeLimit: false,
-                },  
-                genderLimit: null, //성별구분 (GOSIWON: GENDER_LIMIT - VARCHAR(22))
-            },
+            priceMin: 0, //월세
+            priceMax: 0, //월세
+            depositMin: 0, //보증금
+            depositMax: 0, //보증금
+            maintenanceFee: 0, //관리비
 
-            contractMin: 0, //최소 계약 기간 (GOSIWON: CONTRACT_MIN - INT(일수))
+            contractMin: 0, //최소 계약 기간
 
-            //고시원
-            gosiwon: {
-                type: null, //타입[고시원/원룸텔] (GOSWION: TYPE - VARCHAR22)
-            },
+            //원투룸의 경우: 해당 층 / 전체 층
+            thisFloor: 0,
+            totalFloor: 0,
+
+            //원투룸의 경우: 전용 면적 / 공급 면적
+            privateArea: 0,
+            totalArea: 0,
+
+            //원룸-투룸-쓰리룸
+            roomCntType: null,
+
+            //원투룸 외
+            ageMin: 0,
+            ageMax: 0,
+            genderLimit: null,
 
             //공유주거
-            shared: {
-                shareType: null,
-                singleRoomCount: 0,
-                twinRoomCount: 0,
-            },
+            validRoomCnt: 0,
+            accomoCnt: 0,
 
-            //개인시설 (GOSIWON: PRICATE_FACILITES - VARCHAR(255))
-            privateFacilities: { 
-                priToilet: false,
-                priShower: false,
-                res: null,
-            },
+            privateFacilities: [],
+            services: [],
+            languages: [],
+            etc: [],
 
-            //제공 서비스 (GOSIWON: SERVICES - VARCHAR(255))
-            services: {
-                securityCom: false,
-                cleanCom: false,
-                disinfectCom: false,
-                cashReceipt: false,
-                creditCard: false,
-                welcomeBox: false,
-                freeMeal: false,
-                manlessDeliveryBox: false,
-                res: null,
-            },
-
-            //외국어 응대 (GOSIWON: LANGUAGES - VARCHAR(255))
-            languages: {
-                eng: false,
-                chn: false,
-                jpn: false,
-                res: null,
-            },
-
-            //기타 (GOSIWON: ETC - VARCHAR(255))
-            etc: {
-                allowMoveIn: false,
-                allowForeigner: false,
-                allowPet: false,
-                res: null,
-            },
-
-            //상세 설명, 사진
-            description: '', // GOSIWON: DESCRIPTION - TEXT
-            pics: '', // ROOM: PICS -VARCHAR(255)
+            description: '',
+            pics: '', 
         },
 
-        //대출 
-        loanInfo: {
-            loans: { // ROOM: CAN_LOAN - TINYINT (0/1)
-                4: false, //LH HUG
-                3: false, //중기청 100
-                2: false, //중기청 80
-                1: false, //버팀목
-                none: false,
-                res: null,
-            },
-            hasMortgage: null,
-        },
+        /*
+        대출 정보 - LoanInfo
+        */ 
+       loanInfo: {
+        loans: [],
+        hasMortgage: false,
+       },
 
-        //시설
+        /*
+        시설 정보 - FacilitiesInfo
+        */ 
         facilitiesInfo: {
-            facilityHeating: { //GOSIWON: FACILITY_HEATING - VARCHAR(255)
-                hotCenter: false,
-                hotPeronsal: false,
-                res: null,
-            },
-            facilityCooling: { //GOSIWON: FACILITY_COOLING - VARCHAR(255)
-                coolCenter: false,
-                coolPersonal: false,
-                res: null,
-            },
-            facilityLife: { //GOSIWON: FACILITY_LIFE - VARCHAR(255)
-                bed: false,
-                closet: false,
-                washingMachine: false,
-                desk: false,
-                refrig: false,
-                chair: false,
-                induction: false,
-                dryer: false,
-                hairDryer: false,
-                table: false,
-                airCon: false,
-                tv: false,
-                microwave:false,
-                res: null,
-            },
-            facilitySecurity: { //GOSIWON: FACILITY_SECURITY - VARCHAR(255)
-                digitLock: false,
-                fireKiller: false,
-                publicEntrance: false,
-                cctv: false,
-                springCooler: false,
-                fireAlarm: false,
-                res: null,
-            },
+            facilityHeating: [],
+            facilityCooling: [],
+            facilityLife: [],
+            facilitySecurity: [],
         },
 
-        //건물
+        /*
+        건물 정보 - BuildingInfo
+        */ 
         buildingInfo: {
-            buildingType: null, //GOSIWON - BUILDING_TYPE - TINYINT(1)
-            canParking: null, //GOSIWON - CAN_PARKING - TINYINT(1)
-            hasElevator: null, //GOSIWON - HAS_ELEVATOR - TINYINT(1)
+            buildingType: null, 
+            canParking: null, 
+            hasElevator: null,
         },
 
         //선택이미지
@@ -244,118 +160,6 @@ export const usePostRoomStore = defineStore('postRoom', {
             else this.progress = 80;
         },
 
-        //체크리스트 -> 문자열
-        convertToString(infoType) {
-            const privagteNames = {
-                'priToilet': '개인화장실',
-                'priShower': '개인샤워실',
-            };
-
-            const serviceNames = {
-                'securityCom': '경비업체',
-                'cleanCom': '청소업체',
-                'disinfectCom': '방역업체',
-                'cashReceipt': '현금영수증',
-                'creditCard': '신용카드',
-                'manlessDeliveryBox': '무인택배함',
-                'welcomeBox': '웰컴박스',
-                'freeMeal': '식사제공',
-            };
-
-            const langNames = {
-                'eng': '영어',
-                'chn': '중국어',
-                'jpn': '일본어',
-            };
-
-            const etcNames = {
-                'allowMoveIn': '주소이전',
-                'allowForeigner': '외국인 가능',
-                'allowPet': '반려동물 가능',
-            };
-
-            const hotNames = {
-                'hotCenter': '중앙난방',
-                'hotPeronsal': '개인난방',
-            };
-
-            const coolNames = {
-                'coolCenter': '중앙냉방',
-                'coolPersonal': '개인냉방',
-            };
-
-            const lifeNames = {
-                'bed': '침대',
-                'closet': '옷장(행거)',
-                'washingMachine': '세탁기',
-                'table': '식탁',
-                'microwave': '전자레인지',
-                'desk': '책상',
-                'refrig': '냉장고',
-                'dryer': '건조기',
-                'airCon': '에어컨',
-                'chair': '의자',
-                'induction': '인덕션',
-                'hairDryer': '헤어 드라이기',
-                'tv': 'TV',
-            };
-
-            const securityNames = {
-                'digitLock': '디지털도어락',
-                'cctv': 'CCTV',
-                'fireKiller': '소화기',
-                'springCooler': '스프링쿨러',
-                'publicEntrance': '공동현관',
-                'fireAlarm': '화재 경보 시스템',
-            };
-
-            let val = ''; //DB로 넘겨서 넣을 문자열
-            const info = infoType;
-
-            for (let key in info) {
-                if (info[key]) {
-                    //영어값 => 한글로 변환
-                    if (privagteNames[key]) val += `${privagteNames[key]}|`;
-                    else if (serviceNames[key]) val += `${serviceNames[key]}|`;
-                    else if (langNames[key]) val += `${langNames[key]}|`;
-                    else if (etcNames[key]) val += `${etcNames[key]}|`;
-                    else if (hotNames[key]) val += `${hotNames[key]}|`;
-                    else if (coolNames[key]) val += `${coolNames[key]}|`;
-                    else if (lifeNames[key]) val += `${lifeNames[key]}|`;
-                    else if (securityNames[key]) val += `${securityNames[key]}|`;
-                    else if (key !== 'res') val += `${key}|`
-                }
-            }
-        
-            return val.trim().substring(0, val.length - 1);
-        },
-        convertTo() {
-            this.basicInfo.privateFacilities.res = this.convertToString(this.basicInfo.privateFacilities);
-            this.basicInfo.services.res = this.convertToString(this.basicInfo.services);
-            this.basicInfo.languages.res = this.convertToString(this.basicInfo.languages);
-            this.basicInfo.etc.res = this.convertToString(this.basicInfo.etc);
-
-            this.loanInfo.loans.res = this.convertToString(this.loanInfo.loans);
-
-            this.facilitiesInfo.facilityHeating.res = this.convertToString(this.facilitiesInfo.facilityHeating);
-            this.facilitiesInfo.facilityCooling.res = this.convertToString(this.facilitiesInfo.facilityCooling);
-            this.facilitiesInfo.facilityLife.res = this.convertToString(this.facilitiesInfo.facilityLife);
-            this.facilitiesInfo.facilitySecurity.res = this.convertToString(this.facilitiesInfo.facilitySecurity);
-        },
-
-        //관리비 없음 or 보증금 없음 or 연령 제한 없음 TRUE면, 각 값 0처리
-        convertFalseToZero() {
-            if(this.basicInfo.price.isNoMaintenanceFee) this.basicInfo.price.maintenanceFee = 0;
-            if(this.basicInfo.price.isNoDepositFee) {
-                this.basicInfo.price.depositMin = 0;
-                this.basicInfo.price.depositMax = 0;
-            }
-            if(this.basicInfo.jachiElse.age.isNoAgeLimit) {
-                this.basicInfo.jachiElse.age.ageMin = 0;
-                this.basicInfo.jachiElse.age.ageMax = 0;
-            }
-        },
-
         //유효성 검사
         checkGosiwonValue() {
             if(this.selectedFiles.length === 0) alert('사진을 최소 1장 등록해주세요.');
@@ -401,35 +205,16 @@ export const usePostRoomStore = defineStore('postRoom', {
 
         //폼 제출
         async submitForm() {
-            this.convertTo();
-            this.convertFalseToZero();
-            this.checkGosiwonValue();
-        
-            const authStore = useAuthStore();
-
-            const data = {
-                category: this.category,
-                basicInfo: this.basicInfo,
-                loanInfo: this.loanInfo,
-                facilitiesInfo: this.facilitiesInfo,
-                buildingInfo: this.buildingInfo,
-                writerId: authStore.id, //작성자 아이디
-            };
-
-            let formData = new FormData();
-            formData.append('dto', JSON.stringify(data));
-
-            //파일 추가
-            this.selectedFiles.forEach((file) => {
-                formData.append('pics', file);
-            });
+            // this.checkGosiwonValue();
 
             try {
-                //체크목록 문자열화 (값|값|값)
-                this.convertTo();
-                this.checkGosiwonValue();
+                const formData = new FormData();
+                const roomData = { ...this.$state };
+                formData.append('roomData', JSON.stringify(roomData));
+                
+                this.selectedFiles.forEach(f => formData.append('pics', f));
 
-                const res = await axios.post('/api/rooms', formData, {
+                const res = await api.post('/api/rooms', formData, {
                     headers: {
                       'Content-Type': 'multipart/form-data'
                     }
@@ -437,9 +222,14 @@ export const usePostRoomStore = defineStore('postRoom', {
 
                 if (res.status === 200) {
                     this.$reset();
-                    router.push(`/houses/gosiwons/${res.data}`);
-                }
+                    console.log('매물 작성 완료');
+                } 
+
             } catch (err) {
+                if(err.status === 401)  {
+                    alert('로그인이 필요합니다.'); return;
+                }
+
                 console.error('>>>>>>>>    ROOM SUBMIT FAILED  (- ^ -)    <<<<<<<<<', err);
                 alert(`매물 작성에 실패했습니다. ${err.message}`);
             }

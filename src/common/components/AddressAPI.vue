@@ -1,9 +1,9 @@
 <template>
   <div>
-      <input class="form-control" type="text" v-model="store.basicInfo.addr.postcode" placeholder="우편번호" readonly required />
+      <input class="form-control" type="text" v-model="store.basicInfo.postcode" placeholder="우편번호" readonly required />
       <input class="form-control" type="button" @click="execDaumPostcode" value="우편번호 찾기" /><br>
-      <input class="form-control" type="text" v-model="store.basicInfo.addr.address" placeholder="주소" readonly required /><br>
-      <input class="form-control" type="text" v-model="store.basicInfo.addr.detailAddress" placeholder="상세주소(선택)" id="detailAddress" />
+      <input class="form-control" type="text" v-model="store.basicInfo.address" placeholder="주소" readonly required /><br>
+      <input class="form-control" type="text" v-model="store.basicInfo.detailAddress" placeholder="상세주소(선택)" id="detailAddress" />
       <input class="form-control" type="text" v-model="extraAddress" readonly />
   </div>
 </template>
@@ -41,12 +41,12 @@ function execDaumPostcode() {
         }
       }
 
-      store.basicInfo.addr.postcode = data.zonecode;
-      store.basicInfo.addr.address = addr;
+      store.basicInfo.postcode = data.zonecode;
+      store.basicInfo.address = addr;
       extraAddress.value = extraAddr;
 
       // emit을 통해 부모 컴포넌트로 주소 정보 전달
-      emit('update-address', store.basicInfo.addr.address + " " + (store.basicInfo.addr.detailAddress || ''));
+      emit('update-address', store.basicInfo.address + " " + (store.basicInfo.detailAddress || ''));
 
       getCoordinates(addr); //위도, 경도
 
@@ -64,8 +64,8 @@ function getCoordinates(address) {
   geocoder.addressSearch(address, (result, status) => {
     if (status === window.daum.maps.services.Status.OK) {
       const { y: lat, x: lon } = result[0];
-      store.basicInfo.addr.roomLat = lat;  
-      store.basicInfo.addr.roomLong = lon;
+      store.basicInfo.roomLat = lat;  
+      store.basicInfo.roomLng = lon;
 
     } else {
       console.error('Geocode was not successful for the following reason: ' + status);

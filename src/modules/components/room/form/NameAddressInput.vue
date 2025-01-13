@@ -1,6 +1,6 @@
 <template>
     <!-- 제목-->
-    <div class="mb-3">
+    <div class="mb-3" v-if="store.category !== 'OTR'">
         <label class="form-label fw-bold" for="r-title">이름<span class="text-danger">*</span></label>
         <input class="form-control" type="text" id="r-title" v-model="store.basicInfo.title" required>
     </div>

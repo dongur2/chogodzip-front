@@ -39,7 +39,7 @@
                         <i class="far fa-comments opacity-60 me-2"></i>채팅방 목록
                       </router-link>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/rooms">방 내놓기</a>
+                    <router-link class="dropdown-item" :to="{name : 'roomRegist'}">방 내놓기</router-link>
                     <a class="dropdown-item" href="#" @click="signOut">로그아웃</a>
                 </div>
             </div>

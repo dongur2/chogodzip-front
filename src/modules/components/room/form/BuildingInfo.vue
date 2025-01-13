@@ -9,15 +9,15 @@
                 <div class="form-label pt-3 pb-2 fw-bold">건축물 구분<span class="text-danger">*</span></div>
                 <div class="container row w-100">
                     <div class="form-check col-lg-4 justify-content-around">
-                        <input class="form-check-input" type="radio" id="b-store" name="b-type" v-model="store.buildingInfo.buildingType" value="0">
+                        <input class="form-check-input" type="radio" id="b-store" name="b-type" v-model="store.buildingInfo.buildingType" value="상가건물">
                         <label class="form-check-label" for="b-store">상가건물</label>
                     </div>
                     <div class="form-check col-lg-4 justify-content-around">
-                        <input class="form-check-input" type="radio" id="b-public" name="b-type" v-model="store.buildingInfo.buildingType" value="1">
+                        <input class="form-check-input" type="radio" id="b-public" name="b-type" v-model="store.buildingInfo.buildingType" value="공동주택">
                         <label class="form-check-label" for="b-public">공동주택</label>
                     </div>
                     <div class="form-check col-lg-4 justify-content-around">
-                        <input class="form-check-input" type="radio" id="b-private" name="b-type" v-model="store.buildingInfo.buildingType" value="2">
+                        <input class="form-check-input" type="radio" id="b-private" name="b-type" v-model="store.buildingInfo.buildingType" value="단독주택">
                         <label class="form-check-label" for="b-private">단독주택</label>
                     </div>
                 </div>

@@ -26,16 +26,20 @@
               <label class="form-label" for="r-category">매물 유형<span class="text-danger">*</span></label>
               <select class="form-select" id="r-category" required v-model="store.category" @change="updateProgress">
                 <option value="" disabled>매물 유형을 선택해주세요.</option>
-                <option value="gosiwon">고시원</option>
-                <option value="jachiroom">자취방</option>
-                <option value="sharehouse">공유주거공간</option>
+                <option value="GSW">고시원</option>
+                <option value="OTR">원∙투룸</option>
+                <option value="SHH">공유주거공간</option>
               </select>
             </div>
           </div>
         </section>
 
         <!-- 세부 폼 작성: 매물 유형에 따라 표시 컴포넌트 변경 -->
-        <RoomPostForm v-if="store.category !== null" :category="store.category" />
+        <RoomPostForm v-if="store.category !== null" />
+
+        <div class="d-flex justify-content-end">
+          <button type="button" class="btn btn-translucent-accent w-25" @click="store.submitForm">매물 등록</button>
+        </div>
       </div>
 
       <!-- 작성 진행 카드 -->

@@ -10,13 +10,13 @@
                 <div class="row">
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="h-in-center" v-model="storeFac.facilityHeating.hotCenter" >
+                      <input class="form-check-input" type="checkbox" id="h-in-center" value="중앙난방" v-model="storeFac.facilityHeating" >
                       <label class="form-check-label" for="h-in-center">중앙난방</label>
                     </div>
                   </div>
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="h-in-personal" v-model="storeFac.facilityHeating.hotPeronsal" >
+                      <input class="form-check-input" type="checkbox" id="h-in-personal" value="개인난방" v-model="storeFac.facilityHeating" >
                       <label class="form-check-label" for="h-in-personal">개인난방</label>
                     </div>
                   </div>
@@ -29,13 +29,13 @@
                 <div class="row">
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="c-in-center" v-model="storeFac.facilityCooling.coolCenter">
+                      <input class="form-check-input" type="checkbox" id="c-in-center" value="중앙냉방" v-model="storeFac.facilityCooling">
                       <label class="form-check-label" for="c-in-center">중앙냉방</label>
                     </div>
                   </div>
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="c-in-personal" v-model="storeFac.facilityCooling.coolPersonal">
+                      <input class="form-check-input" type="checkbox" id="c-in-personal" value="개인냉방" v-model="storeFac.facilityCooling">
                       <label class="form-check-label" for="c-in-personal">개인냉방</label>
                     </div>
                   </div>
@@ -48,59 +48,59 @@
                 <div class="row">
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-bed" v-model="storeFac.facilityLife.bed">
+                      <input class="form-check-input" type="checkbox" id="l-bed" value="침대" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-bed">침대</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-closet" v-model="storeFac.facilityLife.closet">
+                      <input class="form-check-input" type="checkbox" id="l-closet" value="옷장(행거)" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-closet">옷장(행거)</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-washing-machine" v-model="storeFac.facilityLife.washingMachine">
+                      <input class="form-check-input" type="checkbox" id="l-washing-machine" value="세탁기" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-washing-machine">세탁기</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-table" v-model="storeFac.facilityLife.table">
+                      <input class="form-check-input" type="checkbox" id="l-table" value="식탁" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-table">식탁</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-micro-wave" v-model="storeFac.facilityLife.microwave">
+                      <input class="form-check-input" type="checkbox" id="l-micro-wave" value="전자레인지" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-micro-wave">전자레인지</label>
                     </div>
                   </div>
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-desk" v-model="storeFac.facilityLife.desk">
+                      <input class="form-check-input" type="checkbox" id="l-desk" value="책상" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-desk">책상</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-refrigerator" v-model="storeFac.facilityLife.refrig">
+                      <input class="form-check-input" type="checkbox" id="l-refrigerator" value="냉장고" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-refrigerator">냉장고</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-dryer" v-model="storeFac.facilityLife.dryer">
+                      <input class="form-check-input" type="checkbox" id="l-dryer" value="건조기" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-dryer">건조기</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-air-con" v-model="storeFac.facilityLife.airCon">
+                      <input class="form-check-input" type="checkbox" id="l-air-con" value="에어컨" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-air-con">에어컨</label>
                     </div>
                   </div>
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-chair" v-model="storeFac.facilityLife.chair">
+                      <input class="form-check-input" type="checkbox" id="l-chair" value="의자" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-chair">의자</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-induction" v-model="storeFac.facilityLife.induction">
+                      <input class="form-check-input" type="checkbox" id="l-induction" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-induction">인덕션</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-hair-dryer" v-model="storeFac.facilityLife.hairDryer">
+                      <input class="form-check-input" type="checkbox" id="l-hair-dryer" value="헤어 드라이기" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-hair-dryer">헤어 드라이기</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="l-tv" v-model="storeFac.facilityLife.tv">
+                      <input class="form-check-input" type="checkbox" id="l-tv" value="TV" v-model="storeFac.facilityLife">
                       <label class="form-check-label" for="l-tv">TV</label>
                     </div>
                   </div>
@@ -113,31 +113,31 @@
                 <div class="row">
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="s-digital-lock" v-model="storeFac.facilitySecurity.digitLock">
+                      <input class="form-check-input" type="checkbox" id="s-digital-lock" value="디지털도어락" v-model="storeFac.facilitySecurity">
                       <label class="form-check-label" for="s-digital-lock">디지털도어락</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="s-cctv" v-model="storeFac.facilitySecurity.cctv">
+                      <input class="form-check-input" type="checkbox" id="s-cctv" value="CCTV" v-model="storeFac.facilitySecurity">
                       <label class="form-check-label" for="s-cctv">CCTV</label>
                     </div>
                   </div>
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="s-fire-killer" v-model="storeFac.facilitySecurity.fireKiller">
+                      <input class="form-check-input" type="checkbox" id="s-fire-killer" value="소화기" v-model="storeFac.facilitySecurity">
                       <label class="form-check-label" for="s-fire-killer">소화기</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="s-spring-cooler" v-model="storeFac.facilitySecurity.springCooler">
+                      <input class="form-check-input" type="checkbox" id="s-spring-cooler" value="스프링쿨러" v-model="storeFac.facilitySecurity">
                       <label class="form-check-label" for="s-spring-cooler">스프링쿨러</label>
                     </div>
                   </div>
                   <div class="col-sm-4">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="s-public-entrance" v-model="storeFac.facilitySecurity.publicEntrance">
+                      <input class="form-check-input" type="checkbox" id="s-public-entrance" value="공동현관" v-model="storeFac.facilitySecurity">
                       <label class="form-check-label" for="s-public-entrance">공동현관</label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="s-fire-alarm" v-model="storeFac.facilitySecurity.fireAlarm">
+                      <input class="form-check-input" type="checkbox" id="s-fire-alarm" value="화재 경보 시스템" v-model="storeFac.facilitySecurity">
                       <label class="form-check-label" for="s-fire-alarm">화재 경보 시스템</label>
                     </div>
                   </div>
