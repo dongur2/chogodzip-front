@@ -1,7 +1,7 @@
 <template>
     <aside class="col-md-5" style="display: flex; flex-direction: column;">
         <div style="margin-left: 1rem; flex-grow: 1;">
-            <p class="fs-4 pt-3">매물 이름 : {{ room.title === null ? room.address : room.title }}</p>
+            <p class="fs-4 pt-3">매물 이름 : {{ room.houseTypeCd === 'HOUTP00008' || room.houseTypeCd === 'HOUTP00009' ? room.detailName : room.title }}</p>
             
             <!-- 가격 -->
             <h4>보증금 
@@ -46,20 +46,20 @@
             <h6 class="main1 mt-3" style="margin-left: 7px; font-weight: bolder; color: #D85F5F;">
                 서울시 {{ guName }}
             </h6>
-            <!-- <div class="row" style="width: 25rem;">
+            <div class="row" style="width: 25rem;">
                 <div class="col text-center" style="border-right: solid 3px #D2D2D2">
                     <div style="font-weight: bold; color:black;">최대</div>
-                    <div><span style="font-weight: bolder; color: #D85F5F; font-size: 1.3rem; margin-right: 0.2rem;">{{nameStatus.maxPrice}}</span>만원</div>
+                    <div><span style="font-weight: bolder; color: #D85F5F; font-size: 1.3rem; margin-right: 0.2rem;">{{ guData.maxPrice }}</span>만원</div>
                 </div>
                 <div class="col text-center" style="border-right: solid 3px #D2D2D2">
                     <div style="font-weight: bold; color:black;">평균</div>
-                    <div><span style="font-weight: bolder; color: #D85F5F; font-size: 1.3rem; margin-right: 0.2rem;">{{ nameStatus.avgPrice ? nameStatus.avgPrice.toFixed(1) : '0.0' }}</span>만원</div>
+                    <div><span style="font-weight: bolder; color: #D85F5F; font-size: 1.3rem; margin-right: 0.2rem;">{{ guData.avgPrice ? guData.avgPrice.toFixed(1) : '0.0' }}</span>만원</div>
                 </div>
                 <div class="col text-center">
                     <div style="font-weight: bold; color:black;">최소</div>
-                    <div><span style="font-weight: bolder; color: #D85F5F; font-size: 1.3rem; margin-right: 0.2rem;">{{nameStatus.minPrice}}</span>만원</div>
+                    <div><span style="font-weight: bolder; color: #D85F5F; font-size: 1.3rem; margin-right: 0.2rem;">{{ guData.minPrice }}</span>만원</div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </aside>
 </template>
@@ -88,10 +88,10 @@ const props = defineProps({
     //     type: Number,
     //     required: true
     // },
-    // nameStatus: {
-    //     type: Object,
-    //     required: true
-    // },
+    guData: {
+        type: Object,
+        required: true
+    },
 });
 
 //해당 매물의 구 추출

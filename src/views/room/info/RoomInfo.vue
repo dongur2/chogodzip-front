@@ -20,6 +20,7 @@
       <!-- 요약카드 -->
       <DetailCard 
         :room="room"
+        :guData="guData"
       />
     </div>
 
@@ -47,6 +48,11 @@ import { onMounted, ref, reactive, computed, watch } from 'vue';
 
 //사용할 데이터
 const room = reactive({});
+const guData = reactive({
+    maxPrice: '',
+    avgPrice: '',
+    minPrice: '',
+  });
 const roomType = computed(() => {
   if (['HOUTP00001', 'HOUTP00003', 'HOUTP00006'].includes(room.houseTypeCd)) return '고시원';
   else if (['HOUTP00002', 'HOUTP00004', 'HOUTP00005'].includes(room.houseTypeCd)) return '공유주거공간';
@@ -71,6 +77,10 @@ onMounted(async () => {
     //2. 사용자가 로그인했을 경우 현재 매물 작성자인지 확인
 
     //3. 이 구의 최소/평균/최대 가격 조회
+    if (guOfAddress) {
+      const dataOfGu = await detailApi.getStatus(room.houseTypeCd, guOfAddress);
+      Object.assign(guData, dataOfGu);
+    }
 
     //4. 근처 전철역/대학 정보 조회 & 도보 거리 계산
 
