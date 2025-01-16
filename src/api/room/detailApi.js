@@ -20,26 +20,27 @@ export default {
         return data;
     },
 
+    //매물의 모든 리뷰 조회
+    async getAllReview(roomId){
+        const { data } = await api.get(`/api/rooms/${roomId}/reviews`);
+        return data;
+    },
+
+    //리뷰 작성
+    async registUserReview(params){
+        const { data } = await api.post(`/api/rooms/${params.roomId}/reviews`, {
+            content : params.content
+        }, { headers });
+        return data;
+    },
+
     async getOneGosiwon(no){
         const {data} = await api.get(`${BASE_URL}/gosiwons/${no}`);
         console.log('ONE GOSIWON : ', data);
         return data;
     },
-    async getAllReview(no){
-        const {data} = await api.get(`${BASE_URL}/review/${no}`);
-        console.log('review : ',data);
-        return data;
-    },
 
-    async registReply(params){
-        const {data} = await api.post(`${BASE_URL}/regist`, {
-            userName : params.userId,
-            roomId : params.roomId,
-            reply : params.reply
-        }, { headers });
-        console.log('reply eotrmf : ',data);
-        return data;
-    },
+
     async getOneJachi(no){
         const {data} = await api.get(`${BASE_URL}/room/${no}`);
         console.log('jachi dd : ',data);

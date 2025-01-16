@@ -2,7 +2,7 @@
   <div class="ai-card">
       <div class="container">
           <h3 class="title mb-3" style="margin-left:15px;">
-              <span class="emoji mb-4">👾</span>
+              <span class="emoji mb-4">👾 </span>
               <span class="h5">한눈에 보는 장단점 </span>
           </h3>
           <div class="toggle-bar" style="display:flex; width:100%;">
@@ -10,8 +10,7 @@
               <button style="flex: 1;" :class="{ active: activeTab === 'cons' }" @click="activeTab = 'cons'">단점</button>
           </div>
 
-          <transition name="fade" mode="out-in">
-                    <!-- 장점 탭 -->
+          <!-- <transition name="fade" mode="out-in">
               <div v-if="activeTab === 'pros'" key="pros" class="content">
                 <ul>
                   <li v-for="(pros, index) in positiveReviews" :key="index">
@@ -21,7 +20,6 @@
                 </ul>
               </div>
 
-                      <!-- 단점 탭 -->
               <div v-else key="cons" class="content">
                 <ul>
                   <li v-for="(cons, index) in negativeReviews" :key="index">
@@ -30,7 +28,7 @@
                   </li>
                 </ul>
               </div>
-          </transition>
+          </transition> -->
       </div>
   </div>
 
@@ -39,7 +37,7 @@
         <div class="tab-content pt-2">
           <div class="tab-pane fade show active" id="reviews-about-you" role="tabpanel">
             <div class="mb-3 position-relative pt-2 pb-2">
-              <input style="height: 100px; width: 100%;" v-model="reviewContent" class="form-control" id="input-normal" type="text">
+              <input style="height: 100px; width: 100%;" v-model="reviewContent" class="form-control" id="input-normal" type="text" @input="checkSignIn">
               <button class="pt-2 btn"
                 style="background: #68C9CB; color:white; position: absolute; right: 10px; bottom: 15px; padding: 5px 10px; font-size: 0.9rem;" @click="submitReview"
                 type="submit">작성</button>
@@ -47,19 +45,19 @@
   
             <!-- 리뷰 데이터 렌더링 -->
             <div v-if="reviews && reviews.length > 0">
-              <div v-for="review in paginatedReviews" :key="review.reviewId" class="mb-4 pb-4 border-bottom">
+              <div v-for="review in paginatedReviews" :key="review.urvId" class="mb-4 pb-4 border-bottom">
                 <div class="d-flex justify-content-between">
                   <div class="d-flex align-items-center">
                     <img class="rounded-circle me-1"
-                      :src="review.userPic"
+                      :src="review.pic"
                       width="40" height="40" alt="Avatar" style="width:50px; height:50px;">
                     <div class="ps-2">
-                      <h6 class="fs-base mb-0">{{ review.userName }}</h6> <!-- 사용자 ID -->
+                      <h6 class="fs-base mb-0">{{ review.nickname }}</h6>
                       <span class="text-muted fs-sm">{{ formatDate(review.createdAt) }}</span> 
                    </div>
                   </div>
                 </div>
-                <p style="margin-left:4rem;">{{ review.reviewContent }}</p> <!-- 리뷰 내용 -->
+                <p style="margin-left:4rem;">{{ review.content }}</p>
               </div>
             </div>
             <p v-else>아직 리뷰가 없습니다.</p>
@@ -85,12 +83,12 @@
 </template>
 
 <script setup>
-// 부모 컴포넌트에서 reviews 데이터를 받아온다.
 import { ref, computed, onMounted } from 'vue';
-import api from '@/api/detailRoom';
+
+import api from '@/api/room/detailApi';
 
 const props = defineProps({
-  cardData: {
+  room: {
     type: Object,
     required: true,
   },
@@ -98,14 +96,14 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  userId: {
-    type: String,
-    required: false,
-  },
-  summaryReviews: {
-      type: String,
-      required: true,
-  },
+  // userId: {
+  //   type: String,
+  //   required: false,
+  // },
+  // summaryReviews: {
+  //     type: String,
+  //     required: true,
+  // },
 });
 
 const reviewContent = ref('');
@@ -139,6 +137,8 @@ if (currentPage.value < totalPages.value) {
   currentPage.value += 1;
 }
 };
+
+
 // ------------------- 기존 리뷰 요약 1안 -------------------------------------------------------
 
 // // GPT로부터 받은 요약 리뷰를 긍정/부정 리뷰로 나누어 출력
@@ -173,67 +173,78 @@ if (currentPage.value < totalPages.value) {
 // 페이지 로드 시 콘솔에 summaryReviews 출력
 
 // 요약된 긍정/부정 리뷰를 긍정/부정 탭에 맞게 분리
-const positiveReviews = computed(() => {
-  console.log("summaryReviews 초기값: ", props.summaryReviews);
+// const positiveReviews = computed(() => {
+//   console.log("summaryReviews 초기값: ", props.summaryReviews);
   
-  // summary가 null이거나 빈 문자열이면 빈 배열 반환
-  if (!props.summaryReviews) return [];
+//   // summary가 null이거나 빈 문자열이면 빈 배열 반환
+//   if (!props.summaryReviews) return [];
 
-  const summary = props.summaryReviews || '';
+//   const summary = props.summaryReviews || '';
   
-  // "부정 리뷰 요약 결과:"로 분리하지만, 없을 경우 예외 처리
-  const splitReviews = summary.includes('부정 리뷰 요약 결과:') ? summary.split('부정 리뷰 요약 결과:') : [summary, ''];
+//   // "부정 리뷰 요약 결과:"로 분리하지만, 없을 경우 예외 처리
+//   const splitReviews = summary.includes('부정 리뷰 요약 결과:') ? summary.split('부정 리뷰 요약 결과:') : [summary, ''];
 
-  // 긍정 리뷰 부분 추출
-  const positivePart = splitReviews[0] ? splitReviews[0].replace('긍정 리뷰 요약 결과:', '').trim() : ''; 
-  return positivePart.split('\n')
-    .filter(line => line.trim()) // 빈 줄 필터링
-    .map(line => line.replace(/^\d+\.\s*/, '')); // 숫자 제거
-});
+//   // 긍정 리뷰 부분 추출
+//   const positivePart = splitReviews[0] ? splitReviews[0].replace('긍정 리뷰 요약 결과:', '').trim() : ''; 
+//   return positivePart.split('\n')
+//     .filter(line => line.trim()) // 빈 줄 필터링
+//     .map(line => line.replace(/^\d+\.\s*/, '')); // 숫자 제거
+// });
 
-const negativeReviews = computed(() => {
-  if (!props.summaryReviews) return [];
+// const negativeReviews = computed(() => {
+//   if (!props.summaryReviews) return [];
 
-  const summary = props.summaryReviews || '';
-  const splitReviews = summary.includes('부정 리뷰 요약 결과:') ? summary.split('부정 리뷰 요약 결과:') : ['', ''];
+//   const summary = props.summaryReviews || '';
+//   const splitReviews = summary.includes('부정 리뷰 요약 결과:') ? summary.split('부정 리뷰 요약 결과:') : ['', ''];
 
-  // 부정 리뷰 부분 추출
-  const negativePart = splitReviews[1] ? splitReviews[1].trim() : '';
-  return negativePart.split('\n')
-    .filter(line => line.trim()) // 빈 줄 필터링
-    .map(line => line.replace(/^\d+\.\s*/, '')); // 숫자 제거
-});
+//   // 부정 리뷰 부분 추출
+//   const negativePart = splitReviews[1] ? splitReviews[1].trim() : '';
+//   return negativePart.split('\n')
+//     .filter(line => line.trim()) // 빈 줄 필터링
+//     .map(line => line.replace(/^\d+\.\s*/, '')); // 숫자 제거
+// });
 
-
-const submitReview = async () => {
-if (!reviewContent.value.trim()) {
-  alert('댓글을 작성해주세요.');
-  return;
-}
-
-const params = {
-  userId: props.userId,
-  roomId: props.cardData.room.roomId,
-  reply: reviewContent.value,
-};
-
-try {
-  const response = await api.registReply(params);
-  if (response) {
-    reviewContent.value = ''; 
-    window.location.reload();
-  } else {
-    alert('댓글 등록에 실패했습니다.');
+// 로그인 전 리뷰 작성 제한
+const checkSignIn = () => {
+  if(localStorage.getItem('accessToken') === null) {
+    alert('리뷰를 작성하려면 로그인해주세요.'); 
+    reviewContent.value = null;
+    return;
   }
-} catch (error) {
-  console.error('댓글 등록 오류:', error);
-  alert('댓글 등록 중 오류가 발생했습니다.');
 }
+
+// 리뷰 작성
+const submitReview = async () => {
+  if(localStorage.getItem('accessToken') === null) {
+    alert('로그인해주세요.'); return;
+  }
+
+  if(!reviewContent.value.trim()) {
+    alert('댓글을 작성해주세요.'); return;
+  }
+
+  const params = {
+    roomId: props.room.roomId,
+    content: reviewContent.value,
+  };
+
+  try {
+    const response = await api.registUserReview(params);
+    if (response) {
+      reviewContent.value = ''; 
+      window.location.reload();
+    } else {
+      alert('댓글 등록에 실패했습니다.');
+    }
+  } catch (error) {
+    console.error('댓글 등록 오류:', error);
+    alert('댓글 등록 중 오류가 발생했습니다.');
+  }
 };
 
 const formatDate = (timestamp) => {
-const date = new Date(timestamp);
-return date.toLocaleDateString();
+  const date = new Date(timestamp);
+  return date.toLocaleDateString();
 };
 
 const activeTab = ref('pros');

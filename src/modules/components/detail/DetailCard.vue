@@ -21,13 +21,13 @@
 
              <div class="fs-5" style="color:black;">{{ room.address }}</div>
             <div class="fs-6 my-3" style="color:black;">{{ room.houseTypeNm }}</div>
-            <!-- <div class="mb-3">
+            <div class="mb-3">
                 <img :src="subway_3" width="25" height="25" />
                 <span class="main1" style="margin-left:7px; font-weight:bolder; color:#7747B5;">
                     {{ nearestSubway.name }} 
                 </span>
                 <span v-if="walkTime" style="margin-left:1rem;">도보 {{ walkTime }}분 </span>
-            </div> -->
+            </div>
         </div>
 
         <!-- 버튼 -->
@@ -80,14 +80,14 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    // nearestSubway: {
-    //     type: Object,
-    //     required: true
-    // },
-    // walkTime: {
-    //     type: Number,
-    //     required: true
-    // },
+    nearestSubway: {
+        type: Object,
+        required: true
+    },
+    walkTime: {
+        type: Number,
+        required: true
+    },
     guData: {
         type: Object,
         required: true
