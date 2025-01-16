@@ -11,18 +11,18 @@
             <div class="d-flex align-items-center justify-content-around">
                 <div class="d-flex fs-lg">
                     <i class="fas fa-utensils me-3" style="font-size:2.5rem"/>
-                    <span class="d-flex align-items-center">{{ room.services !== null && room.services.includes('freeMeal') ? '식사 제공' : '식사 미제공' }}</span>
+                    <span class="d-flex align-items-center">{{ room.services !== null && room.services.includes('식사제공') ? '식사 제공' : '식사 미제공' }}</span>
                 </div>
                 <div class="d-flex fs-lg">
                     <i class="fas fa-shower me-3" style="font-size:2.5rem"/>
-                    <span class="d-flex align-items-center">{{ room.privateFacilities !== null && room.privateFacilities.includes('priToilet') ? '개인 화장실' : '공용 화장실' }}</span>
+                    <span class="d-flex align-items-center">{{ room.privateFacilities !== null && room.privateFacilities.includes('개인화장실') ? '개인 화장실' : '공용 화장실' }}</span>
                 </div>
-                <div class="d-flex fs-lg">
+                <!-- <div class="d-flex fs-lg">
                     <i class="fas fa-border-all me-3" style="font-size:2.5rem"/>
                     <span class="d-flex align-items-center">
                         {{ windowType }}
                     </span>
-                </div>
+                </div> -->
                 <div class="d-flex fs-lg">
                     <i class="fas fa-restroom me-3" style="font-size:2.5rem"/>
                     <span class="d-flex align-items-center">
@@ -35,7 +35,7 @@
         <!-- 원투룸: 층수/방타입/주차/동물 -->
         <div v-else class="features py-3 my-4">
             <div class="d-flex align-items-center justify-content-around">
-                <div class="d-flex fs-lg">
+                <div class="d-flex fs-lg" v-if="room.thisFl">
                     <i class="far fa-building me-3" style="font-size:2.5rem"/>
                     <span class="d-flex align-items-center">{{ floorType }}</span>
                 </div>
@@ -87,24 +87,23 @@ const genderType = computed(() => {
 });
 
 //창문
-const windowType = computed(() => {
-    if(props.room.facilityLife === null || props.room.facilityLife.includes('noWindow')) return '창문없음';
-    else if(props.room.facilityLife.includes('outsideWindow')) return '외창있음';
-    else if(props.room.facilityLife.includes('insideWindow')) return '내창있음';
-})
+// const windowType = computed(() => {
+//     if(props.room.facilityLife === null || props.room.facilityLife.includes('noWindow')) return '창문없음';
+//     else if(props.room.facilityLife.includes('outsideWindow')) return '외창있음';
+//     else if(props.room.facilityLife.includes('insideWindow')) return '내창있음';
+// })
 
 //층수
 const floorType = computed(() => {
-    if(props.room.roomAddrFl === null) return '문의필요';
-    else if(props.room.roomAddrFl < 1) return '반지하/지하';
-    else if(props.room.roomAddrFl === 1) return '1층';
-    else if(props.room.roomAddrFl > 1) return '2층 이상';
+    if(props.room.thisFl === null) return '문의필요';
+    else if(props.room.thisFl < 1) return '반지하/지하';
+    else return `${props.room.thisFl}층 | ${props.room.totalFl}층`;
 })
 
 //반려동물
 const petLimit = computed(() => {
     if(props.room.etc === null || props.room.etc === undefined) return '문의필요';
-    else return props.room.etc.split('|').includes('allowPet') ? '반려동물 가능' : '반려동물 불가';
+    else return props.room.etc.includes('반려동물') ? '반려동물 가능' : '반려동물 불가';
 })
 </script>
 

@@ -52,11 +52,11 @@
                 <div class="form-label pt-3 pb-2 fw-bold">임대 유형<span class="text-danger">*</span></div>
                 <div class="container row w-100">
                     <div class="form-check col-lg-6 justify-content-around">
-                        <input class="form-check-input" type="radio" id="rentType-monthly" name="r-rent-type" value="OTRMONTH" v-model="store.basicInfo.rentType">
+                        <input class="form-check-input" type="radio" id="rentType-monthly" name="r-rent-type" value="전세" v-model="store.basicInfo.rentType">
                         <label class="form-check-label" for="rentType-monthly">월세</label>
                     </div>
                     <div class="form-check col-lg-6">
-                        <input class="form-check-input" type="radio" id="rentType-jeonse" name="r-rent-type" value="OTRJONSE" v-model="store.basicInfo.rentType">
+                        <input class="form-check-input" type="radio" id="rentType-jeonse" name="r-rent-type" value="월세" v-model="store.basicInfo.rentType">
                         <label class="form-check-label" for="rentType-jeonse">전세</label>
                     </div>
                 </div>

@@ -1,22 +1,20 @@
 <template>
     <div class="white-box mt-4 p-5">
         <h4 class="mb-3">위치</h4>
-        <div class="fs-6 mb-3" style="color:black;">{{ cardData.roomAddrFl }}</div>
+        <p class="fs-sm">매물의 위치와 근처 편의시설과 의료시설, 전철역, 대학교를 표시하고 있어요.</p>
         <div class="mb-3">
             <img :src="subway_3" width="20" height="20" />
-            <span style="margin-left:16px;">
-                {{ nearestSubway.name }}, 도보{{ walkTime }}분
+            <span style="margin-left:1rem; font-weight: bold;">
+                {{ nearestSubway.name }}
             </span>
         </div>
-
         <div class="mb-3" v-if="nearestUniversity.name">
             <i class="fas fa-school" />
-            <span style="margin-left:1rem;">{{ nearestUniversity.name }}</span>
+            <span style="margin-left:1rem; font-weight: bold;">{{ nearestUniversity.name }}</span>
         </div>
 
-
         <div class="position-relative mt-4">
-            <DetailMap class="rounded-3" :latitude="cardData.room.roomLat" :longitude="cardData.room.roomLong" />
+            <DetailMap class="rounded-3" :latitude="room.roomLat" :longitude="room.roomLong" />
         </div>
     </div>
 </template>
@@ -27,7 +25,7 @@ import DetailMap from '@/common/components/DetailMap.vue';
 import { defineProps } from 'vue';
 
 const props = defineProps({
-    cardData: {
+    room: {
         type: Object,
         required: true
     },

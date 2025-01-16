@@ -30,7 +30,13 @@
     <div class="gray-container">
       <div class="container">
         <DetailInfo :room="room" />
-        <GosiwonTable :room="room"/>
+        <DetailInfoTable :room="room"/>
+        <DetailMap 
+          :room="room"
+          :nearestSubway="nearestSubway"
+          :walkTime="walkTime"
+          :nearestUniversity="nearestUniversity"
+        />
       </div>
     </div>
 
@@ -44,10 +50,11 @@
 </template>
 
 <script setup>
-import DetailCard from '@/modules/components/detail/DetailCard.vue';
-import DetailInfo from '@/modules/components/detail/DetailInfo.vue';
-import GosiwonTable from '@/modules/components/detail/table/GosiwonTable.vue';
-import ReviewTab from '@/modules/components/detail/ReviewTab.vue';
+import DetailCard from '@/modules/components/room/detail/DetailCard.vue';
+import DetailInfo from '@/modules/components/room/detail/DetailInfo.vue';
+import DetailInfoTable from '@/modules/components/room/detail/DetailInfoTable.vue';
+import DetailMap from '@/modules/components/room/detail/DetailMap.vue';
+import ReviewTab from '@/modules/components/room/detail/review/ReviewTab.vue';
 
 import detailApi from '@/api/room/detailApi';
 
